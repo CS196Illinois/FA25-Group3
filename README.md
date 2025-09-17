@@ -1,7 +1,7 @@
 # Group 3
 Group Name: TEAM_NAME
 
-[MVP Link](https://docs.google.com/document/d/1xFI9DDdO5HZAcu36Y6NL-RTDry5E3WHkfy-ZEWuqbXM/edit?usp=sharing)
+[MVP Link](https://docs.google.com/document/d/1xJO01AFZFttQtqiHmHdxW5RcTaI7HjnI/edit?usp=drivesdk&ouid=104942203503972495373&rtpof=true&sd=true)
 
 Team Members: STUDENTS_NETIDS
 
