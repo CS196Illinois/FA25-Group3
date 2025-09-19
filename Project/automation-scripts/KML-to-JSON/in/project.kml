@@ -1,0 +1,958 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document id="1bh91dNGgrl9V240P0qYzDGNmf64eCWzD">
+	<name>Untitled project</name>
+	<StyleMap id="__managed_style_1293D43F1A13A954038C0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_131D77720C03A954038C0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_14710D87DC63A954038C0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_131D77720C03A954038C0">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_5E088AA7E73A954038C0">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=fbc02d&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_3A2995777A3A954038C0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_4FE6BF81033A954038C0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_5E088AA7E73A954038C0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_1192BB0FA1E3A954038C0">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=66bb6a&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<gx:displayMode>card</gx:displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_5C38594FC83A954038BF">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=fbc02d&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<gx:displayMode>card</gx:displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_10E46069E7E3A954038C0">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=66bb6a&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<gx:displayMode>card</gx:displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_FEEE2447C43A954038C0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_10E46069E7E3A954038C0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_1192BB0FA1E3A954038C0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_46DD20C7F53A954038BF">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=fbc02d&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<gx:displayMode>card</gx:displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_14710D87DC63A954038C0">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_35D677162C3A954038BF">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_46DD20C7F53A954038BF</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_5C38594FC83A954038BF</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_15BA4F3A563A954038BF">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=66bb6a&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_4FE6BF81033A954038C0">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=fbc02d&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_21722698023A954038BF">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=66bb6a&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_0731908E753A954038BF">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_15BA4F3A563A954038BF</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_21722698023A954038BF</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Placemark id="02E2B76C133A8A057FD8">
+		<name>Funk Library</name>
+		<LookAt>
+			<longitude>-88.22485090064662</longitude>
+			<latitude>40.10296933303062</latitude>
+			<altitude>223.6927792340722</altitude>
+			<heading>224.184703267677</heading>
+			<tilt>0</tilt>
+			<gx:fovy>39.4479217664003</gx:fovy>
+			<range>352.6038089704889</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0731908E753A954038BF</styleUrl>
+		<Point>
+			<coordinates>-88.22517899146472,40.10283208224077,245.5132494046111</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0800FAEAEE3A8A0782A1">
+		<name>Illini Grove</name>
+		<LookAt>
+			<longitude>-88.21974481983543</longitude>
+			<latitude>40.10123114113743</latitude>
+			<altitude>225.3398200888405</altitude>
+			<heading>216.2315334346796</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>500.5284166891943</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0731908E753A954038BF</styleUrl>
+		<Point>
+			<coordinates>-88.21992297831552,40.10114572412208,225.7585534924557</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="050B7794B03A8A0803FC">
+		<name>Mammoth Statue</name>
+		<LookAt>
+			<longitude>-88.22673156387478</longitude>
+			<latitude>40.10960462899892</latitude>
+			<altitude>233.1240545483454</altitude>
+			<heading>216.2148265194829</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>997.4136856006226</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0731908E753A954038BF</styleUrl>
+		<Point>
+			<coordinates>-88.22606526930203,40.10900102292111,216.6568330959903</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0954929C8F3A8A0996EF">
+		<name>Main Quad</name>
+		<LookAt>
+			<longitude>-88.22640663738817</longitude>
+			<latitude>40.10732754481791</latitude>
+			<altitude>235.2509332527248</altitude>
+			<heading>216.2124789238484</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>1344.256540007045</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0731908E753A954038BF</styleUrl>
+		<Point>
+			<coordinates>-88.2271931393151,40.10663905047802,217.8713159847926</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0ECF366B763A8A099FE0">
+		<name>Volleyball Courts</name>
+		<gx:mid>/g/1vljgxtt</gx:mid>
+		<gx:fid>0x880cd731f4853c6f:0x73289481e18b6ad0</gx:fid>
+		<LookAt>
+			<longitude>-88.2409842</longitude>
+			<latitude>40.1024042</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.365569528667</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.2409842,40.1024042,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0F91524C753A8A09FA17">
+		<name>Bardeen Quadrangle</name>
+		<gx:mid>/g/1tgcb2j4</gx:mid>
+		<gx:fid>0x880cd740050bc371:0x36e61023843158a1</gx:fid>
+		<LookAt>
+			<longitude>-88.22694779999999</longitude>
+			<latitude>40.1115926</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.2494850765976</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_FEEE2447C43A954038C0</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.22694779999999,40.1115926,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0EBD00E22A3A8A0A4FE9">
+		<name>University of Illinois Memorial Stadium</name>
+		<gx:mid>/m/039xl8</gx:mid>
+		<gx:fid>0x880cd7257b237d91:0x870abf0dbc2197db</gx:fid>
+		<LookAt>
+			<longitude>-88.23595859999999</longitude>
+			<latitude>40.0993036</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.4047375261865</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.23595859999999,40.0993036,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="02C0D68C023A8A0BAC88">
+		<name>Pipes statue thing???</name>
+		<LookAt>
+			<longitude>-88.2266488140762</longitude>
+			<latitude>40.11199087137295</latitude>
+			<altitude>215.713711452471</altitude>
+			<heading>-84.00948643780505</heading>
+			<tilt>0.4410455093529014</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>96.38225067365057</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0731908E753A954038BF</styleUrl>
+		<Point>
+			<coordinates>-88.22677377115085,40.11202229257697,223.9336155809985</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0C4A08C3043A8A0C2D58">
+		<name>National Soybean Research Laboratory</name>
+		<gx:mid>/g/1hfcvdx6l</gx:mid>
+		<gx:fid>0x880cd717592787bd:0x1991fc690d457572</gx:fid>
+		<LookAt>
+			<longitude>-88.2226063</longitude>
+			<latitude>40.1013314</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.3791218097572</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.23628652998396,40.09947815478018,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="079A4012A13A8A0C6F66">
+		<name>CRCE</name>
+		<LookAt>
+			<longitude>-88.22267227161443</longitude>
+			<latitude>40.10324935665899</latitude>
+			<altitude>220.9809899546329</altitude>
+			<heading>-82.40220127551534</heading>
+			<tilt>45.0012589806683</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>391.5650058302708</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_3A2995777A3A954038C0</styleUrl>
+		<Point>
+			<coordinates>-88.22190956925681,40.10428840744537,221.1901725647079</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="00A33FAD603A8A0C8277">
+		<name>Next to SCD</name>
+		<LookAt>
+			<longitude>-88.23112562636048</longitude>
+			<latitude>40.09977253758538</latitude>
+			<altitude>226.5234272818495</altitude>
+			<heading>-84.01297099761172</heading>
+			<tilt>0.4411431875381636</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>1507.523629154748</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0731908E753A954038BF</styleUrl>
+		<Point>
+			<coordinates>-88.23251397077345,40.10235203539553,222.9146631233155</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="036B7B9DD33A8A0CE1A0">
+		<name>David Kinley Hall</name>
+		<LookAt>
+			<longitude>-88.22587105461892</longitude>
+			<latitude>40.10344314262267</latitude>
+			<altitude>223.2491066288619</altitude>
+			<heading>-82.40426185847593</heading>
+			<tilt>45.00123858305965</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>388.357365144475</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_3A2995777A3A954038C0</styleUrl>
+		<Point>
+			<coordinates>-88.22575883314695,40.10361848183017,223.1597411109749</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="045C054D433A8A0CF317">
+		<name>Graveyard thing</name>
+		<LookAt>
+			<longitude>-88.22994778830225</longitude>
+			<latitude>40.10036235710531</latitude>
+			<altitude>225.7061590338196</altitude>
+			<heading>-84.01255416179481</heading>
+			<tilt>0.4411289368929599</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>1301.666495948303</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0731908E753A954038BF</styleUrl>
+		<Point>
+			<coordinates>-88.23203837879602,40.09903867828221,224.7505068294741</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="066BC15F023A8A0D6269">
+		<name>Greenhouses</name>
+		<LookAt>
+			<longitude>-88.22348193951302</longitude>
+			<latitude>40.10209599424402</latitude>
+			<altitude>222.856599315514</altitude>
+			<heading>-82.40252929254667</heading>
+			<tilt>45.00095364928006</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>343.5481818350308</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_3A2995777A3A954038C0</styleUrl>
+		<Point>
+			<coordinates>-88.22355253851812,40.10202796173454,223.1046773749102</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0C7B037FE43A8A0DAA14">
+		<name>University of Illinois Tennis Courts</name>
+		<gx:mid>/g/1tn06cjn</gx:mid>
+		<gx:fid>0x880cd710a8e2e4d5:0xb9cc2304b2c8f8c2</gx:fid>
+		<LookAt>
+			<longitude>-88.2213093</longitude>
+			<latitude>40.1011687</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.3811771148987</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.22133099999999,40.1011685,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0FD72F4FDA3A8A0DE8A6">
+		<name>LAR</name>
+		<LookAt>
+			<longitude>-88.21993482480308</longitude>
+			<latitude>40.1040768650383</latitude>
+			<altitude>226.9704533464545</altitude>
+			<heading>-82.40024443167553</heading>
+			<tilt>45.00091665240134</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>337.7302103765396</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_3A2995777A3A954038C0</styleUrl>
+		<Point>
+			<coordinates>-88.21951413533965,40.10414718365127,220.3128117106809</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="03184952793A8A0DF307">
+		<name>Atkins Tennis Center</name>
+		<LookAt>
+			<longitude>-88.22698136088053</longitude>
+			<latitude>40.09639251920472</latitude>
+			<altitude>227.4763064117695</altitude>
+			<heading>224.1179765784028</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>1179.119945694984</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_1293D43F1A13A954038C0</styleUrl>
+		<Point>
+			<coordinates>-88.22631305980683,40.09639281504425,226.7063712098716</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0B162864943A8A0E9EA7">
+		<name>FAR Basketball Court</name>
+		<gx:mid>/g/11s69cw2kx</gx:mid>
+		<gx:fid>0x880cd713c4d452fb:0x349dd54dd440cc7b</gx:fid>
+		<LookAt>
+			<longitude>-88.22258959999999</longitude>
+			<latitude>40.0991285</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.4069493922841</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.22258959999999,40.0991285,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0796C1BC553A8A0ECAD0">
+		<name>PAR Entrance</name>
+		<LookAt>
+			<longitude>-88.22061397223563</longitude>
+			<latitude>40.09921646736166</latitude>
+			<altitude>242.4325601898551</altitude>
+			<heading>-82.40073931912471</heading>
+			<tilt>45.00088369464051</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>332.5480004684869</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_3A2995777A3A954038C0</styleUrl>
+		<Point>
+			<coordinates>-88.22041617347611,40.09947733810889,226.1018866329766</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="031BB3AE823A8A0F322C">
+		<name>Nature Area</name>
+		<LookAt>
+			<longitude>-88.22103422362684</longitude>
+			<latitude>40.10328616822895</latitude>
+			<altitude>220.0749335802893</altitude>
+			<heading>-82.40101001439145</heading>
+			<tilt>45.00108476093435</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>364.1669974030811</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_3A2995777A3A954038C0</styleUrl>
+		<Point>
+			<coordinates>-88.22104505095422,40.10337276634216,236.5229592568635</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="004BF83E593A8A0FB19F">
+		<name>PAR Back</name>
+		<LookAt>
+			<longitude>-88.22044402944795</longitude>
+			<latitude>40.10121880338566</latitude>
+			<altitude>225.0141022039335</altitude>
+			<heading>-82.40097395685657</heading>
+			<tilt>45.00158047382216</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>442.1243429424795</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_3A2995777A3A954038C0</styleUrl>
+		<Point>
+			<coordinates>-88.22037955925646,40.10055169699381,224.7050075184993</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="06454392703A9059E0F0">
+		<name>Alma Mater</name>
+		<gx:mid>/m/02rrf37</gx:mid>
+		<gx:fid>0x880cd73fbd1643ff:0x8bb0674e47204fa6</gx:fid>
+		<LookAt>
+			<longitude>-88.22830990000001</longitude>
+			<latitude>40.10984120000001</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.271613418651</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.2283099,40.1098412,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0362561FB93A905C3690">
+		<name>Spurlock Museum</name>
+		<gx:mid>/m/0f975x</gx:mid>
+		<gx:fid>0x880cd71395b1402d:0xe9677b82ccf02d32</gx:fid>
+		<LookAt>
+			<longitude>-88.2207767</longitude>
+			<latitude>40.1076151</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.2997384162777</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.2207767,40.1076151,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0B5C3F84993A905CC1E9">
+		<name>Krannert Center for the Performing Arts</name>
+		<gx:mid>/m/09gfh9</gx:mid>
+		<gx:fid>0x880cd714661e6cb3:0xbb362acdd233e3f7</gx:fid>
+		<LookAt>
+			<longitude>-88.2224963</longitude>
+			<latitude>40.1079641</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.29532915495</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.2224963,40.1079641,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0E3865210C3A905D60CC">
+		<name>State Farm Center</name>
+		<gx:mid>/m/061830</gx:mid>
+		<gx:fid>0x880cd725fe9dbd03:0x5f5f4ab44d1ed396</gx:fid>
+		<LookAt>
+			<longitude>-88.23590419999999</longitude>
+			<latitude>40.09625310000001</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.4432704847657</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.23590419999999,40.0962531,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0CEACF69B53A905EE068">
+		<name>Illinois Street Residence Hall Commons</name>
+		<gx:mid>/g/11b8vcdkhn</gx:mid>
+		<gx:fid>0x880cd714a0f1d335:0x69f3553caefa8642</gx:fid>
+		<LookAt>
+			<longitude>-88.22187780000002</longitude>
+			<latitude>40.1101134</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.2681743106792</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.2218778,40.1101134,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="01AECAB0323A905F4727">
+		<name>South Quad</name>
+		<gx:mid>/g/1tmqmc75</gx:mid>
+		<gx:fid>0x880cd73d76f5cb77:0xb1cefdf5a1865c18</gx:fid>
+		<LookAt>
+			<longitude>-88.22739199999999</longitude>
+			<latitude>40.10350469999999</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.3516670490417</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.22739199999999,40.10350469999999,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0BDDB1BE1E3A905F7D44">
+		<name>Thomas M. Siebel Center for Computer Science</name>
+		<gx:mid>/m/0yqkg1s</gx:mid>
+		<gx:fid>0x880cd76baa8479a9:0x4e9f01d40d359630</gx:fid>
+		<LookAt>
+			<longitude>-88.22490519999999</longitude>
+			<latitude>40.11380279999999</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.221558947146</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.22490519999999,40.11380279999999,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="07C746A2C13A90605234">
+		<name>University of Illinois Arboretum</name>
+		<gx:mid>/m/094tf8</gx:mid>
+		<gx:fid>0x880cd71c8cb2b407:0x2a92236acbf2ee3d</gx:fid>
+		<LookAt>
+			<longitude>-88.216988</longitude>
+			<latitude>40.09429739999999</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.467973148294</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.216988,40.09429739999999,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="03477A417E3A9060C52F">
+		<name>Activities and Recreation Center</name>
+		<gx:mid>/g/11ghdr6vzj</gx:mid>
+		<gx:fid>0x880cd7220b62d3ad:0xc33a7861125f8b3a</gx:fid>
+		<LookAt>
+			<longitude>-88.2360185</longitude>
+			<latitude>40.1013093</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.3794009880097</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.2360185,40.1013093,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0B81513DCE3A90635560">
+		<name>Raising Cane&apos;s Chicken Fingers</name>
+		<gx:mid>/g/11tnggr3q_</gx:mid>
+		<gx:fid>0x880cd70662c88d55:0x7e7344a443282ec5</gx:fid>
+		<LookAt>
+			<longitude>-88.2323081</longitude>
+			<latitude>40.11008690000001</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.268509125392</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.2323081,40.1100869,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="07CE2F1F243A90638ECB">
+		<name>Boneyard Creek Second Street Basin</name>
+		<gx:mid>/g/11c7q95dhb</gx:mid>
+		<gx:fid>0x880cd74887655553:0xa030aae2dade8053</gx:fid>
+		<LookAt>
+			<longitude>-88.2375057</longitude>
+			<latitude>40.1137066</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.2227744684936</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_35D677162C3A954038BF</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.2375057,40.1137066,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="04B4AD2EB03A95407628">
+		<name>That fountain thing</name>
+		<LookAt>
+			<longitude>-88.21998073961261</longitude>
+			<latitude>40.10866895197312</latitude>
+			<altitude>218.339738227298</altitude>
+			<heading>-84.00644871676873</heading>
+			<tilt>0.4410573475281788</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>267.4754996099728</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0731908E753A954038BF</styleUrl>
+		<Point>
+			<coordinates>-88.21968677284602,40.10876459250253,217.7568652948156</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="05486157D13A95415D89">
+		<name>This side of SCfCS</name>
+		<LookAt>
+			<longitude>-88.22506089743564</longitude>
+			<latitude>40.11433013660437</latitude>
+			<altitude>218.2924152859995</altitude>
+			<heading>16.86394271430027</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>500.0407599986648</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0731908E753A954038BF</styleUrl>
+		<Point>
+			<coordinates>-88.224996134428,40.11431865663418,217.9854928511817</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0436280B863A9541CAC8">
+		<name>Upwells</name>
+		<gx:mid>/g/1tghdqhz</gx:mid>
+		<gx:fid>0x880cd741cfed7129:0xa48b02315deb8245</gx:fid>
+		<LookAt>
+			<longitude>-88.22731999999999</longitude>
+			<latitude>40.1144353</latitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>785.2135670308755</range>
+			<altitudeMode>relativeToGround</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_FEEE2447C43A954038C0</styleUrl>
+		<Point>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<coordinates>-88.22731999999999,40.1144353,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="00707F84963A9542ED78">
+		<name>Lake in the Arboretum</name>
+		<LookAt>
+			<longitude>-88.21764931815804</longitude>
+			<latitude>40.09339350126425</latitude>
+			<altitude>220.0749461338792</altitude>
+			<heading>255.236987979875</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>204.7556641520715</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0731908E753A954038BF</styleUrl>
+		<Point>
+			<coordinates>-88.21768085692233,40.09339000589936,220.0596292688355</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0ED97144C63A9543C5A0">
+		<name>Greenhouses</name>
+		<LookAt>
+			<longitude>-88.22162263664005</longitude>
+			<latitude>40.10217673966986</latitude>
+			<altitude>221.2714810686427</altitude>
+			<heading>188.732061904343</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35.00000000793673</gx:fovy>
+			<range>347.7845139132114</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_1293D43F1A13A954038C0</styleUrl>
+		<Point>
+			<coordinates>-88.22237018389829,40.10228579195683,224.105548402234</coordinates>
+		</Point>
+	</Placemark>
+</Document>
+</kml>
