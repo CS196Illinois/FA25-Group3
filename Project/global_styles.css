@@ -1,0 +1,8 @@
+/*
+Declaring variables for the color scheme we decided on
+*/
+:root {
+    --darkblue: #3e5ab3;
+    --darkerblue: #192a62;
+    --burntorange: #cd870e;
+}
