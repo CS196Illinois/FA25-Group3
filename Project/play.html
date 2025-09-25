@@ -3,9 +3,245 @@
 <head>
     <title>Play GeoUIUC!</title>
     <link rel="stylesheet" href="global_styles.css">
+    <!--Import fonts-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap" rel="stylesheet">
+
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            color: white;
+        }
+
+        #map,
+        #pano {
+            float: left;
+            height: 100%;
+            width: 100vw;
+        }
+
+        #overlay {
+            z-index: 2;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        #timer {
+            position: relative;
+            color: white;
+            width: 200px;
+            text-align: center;
+            font-size: 45px;
+            /* margin-left: calc(50vw - 100px); */
+            background-color: var(--darkblue);
+            height: 60px;
+            border-radius: 34px;
+            padding-bottom: 8px;
+            font-weight: bold;
+            vertical-align: center;
+            margin-top: 10px;
+        }
+
+        img {
+            float: left;
+            margin: 10px;
+        }
+
+        #round-counter {
+            position: relative;
+            width: 200px;
+            font-size: 35px;
+            max-width: 120px;
+            border-radius: 10px 0px 0px 10px;
+            background-color: var(--darkblue);
+            padding: 10px;
+            margin-top: 10px;
+            color: white;
+            line-height: 40px;
+            font-weight: 500;
+            text-align: center;
+            top: 0px;
+        }
+
+        #guess-overlay {
+            position: absolute;
+            bottom: 0;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            right: 0px;
+            margin: 15px;
+            margin-bottom: 10px;
+        }
+
+        #controlsOverlay {
+            margin: 0px;
+            padding: 10px;
+            z-index: 2;
+            position: absolute;
+            bottom: 0;
+            float: left;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(0.5px);
+            padding-top: 0px;
+            border-radius: 0px 10px 0px 0px;
+        }
+
+        #controlsOverlay button {
+            background-color: var(--darkblue);
+            border: 2px solid white;
+            margin-top: 15px;
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            color: white;
+            font-size: 30px;
+
+        }
+
+        #scoreScreen button,
+        #guess-overlay button {
+            height: 40px;
+            background-color: var(--burntorange);
+            border-radius: 10px;
+            border: none;
+            color: var(--darkblue);
+            font-size: 25px;
+            font-weight: 600;
+        }
+
+        #scoreScreen button {
+            color: white
+        }
+
+        #scoreScreen button:hover,
+        #guess-overlay button:hover {
+            background-color: var(--burntorangeHover);
+        }
+
+        #controlsOverlay button:hover {
+            background-color: var(--darkblueHover)
+        }
+
+        #selectMap {
+            margin-bottom: 15px;
+        }
+
+        .hidden {
+            visibility: hidden;
+            display: none;
+        }
+
+        #scoreScreen {
+            position: absolute;
+            top: 0;
+            z-index: 5;
+            visibility: hidden;
+            background-color: var(--darkblue);
+            width: 100%;
+            height: 100vh;
+            border-radius: 0px;
+        }
+
+        #guessMap {
+            width: 400px;
+            height: 300px;
+            z-index: 5;
+        }
+
+
+        #scoreBar {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #scorebar canvas {
+            margin: auto;
+        }
+
+        #scoreBar button {
+            margin: auto;
+            width: 400px;
+        }
+
+        #score {
+            font-size: 50px;
+            color: white;
+            font-weight: bold;
+            line-height: .8;
+        }
+
+        #guessInfo {
+            font-size: 30px;
+        }
+
+        #scoringMap {
+            width: 80vw;
+            height: 50vh;
+            background-color: lightgrey;
+            margin-left: 10vw;
+        }
+
+        #roundInformation {
+            width: 100%;
+            font-size: 55px;
+            text-align: center;
+            font-weight: bold;
+            display: block;
+        }
+    </style>
 </head>
 
 <body>
+    <!-- <div id="map"></div> -->
+    <div id="pano"></div>
+    <div id="guess-overlay">
+        <div id="guessMap"></div>
+        <button id="submitGuess" onclick="submitGuess()">Submit guess!</button>
+    </div>
 
+    <div id="overlay">
+        <img src="img/logo.png" style="max-height: 60px;">
+        <div id="timer"></div>
+        <div id="round-counter"></div>
+    </div>
+    <div id="controlsOverlay">
+        <button id="zoomIn" onclick="zoomIn()">+</button>
+        <button id="zoomOut" onclick="zoomOut()">-</button>
+        <button id="settings">*</button>
+    </div>
+    <img class="hidden" id="map2d" src="img/map.png">
+    <div id="scoreScreen">
+        <img src="img/logo.png" style="max-height: 60px; margin-right: calc(100% - 70px);">
+        <div id="roundInformation"></div>
+        <canvas id="scoringMap"></canvas>
+        <div id="scoreBar">
+            <div id="score"> </div>
+            <canvas id="fillScorebar" height="70" width="10"></canvas>
+            <div id="guessInfo"></div>
+            <button id="nextRound" onclick="startRound()">Start next!</button>
+
+        </div>
+    </div>
 </body>
-<script href="project-scripts.js/play.js"></script>
+<script src="test-scripts/randpoint.js"></script>
+<script src="project-scripts/play.js"></script>
+
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initialize2&v=weekly"
+    defer></script>
+<script>(g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })
+        ({ key: "AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg", v: "weekly" });</script>

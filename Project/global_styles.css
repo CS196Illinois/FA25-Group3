@@ -5,4 +5,10 @@ Declaring variables for the color scheme we decided on
     --darkblue: #3e5ab3;
     --darkerblue: #192a62;
     --burntorange: #cd870e;
+    --burntorangeHover: #ffa916;
+    --darkblueHover: #617fe1;
+}
+
+* {
+    font-family: "Baloo 2";
 }

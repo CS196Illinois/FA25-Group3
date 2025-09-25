@@ -31,8 +31,8 @@ function getRandomPoint() {
     let WARN = 0
     while (WARN < 1000) {
         randomPoint = {
-            long: (Math.random() * (boundingData.topLongitude - boundingData.bottomLongitude)) + boundingData.bottomLongitude,
-            lat: (Math.random() * (boundingData.bottomLatitude - boundingData.topLatitude)) + boundingData.topLatitude
+            lat: (Math.random() * (boundingData.bottomLatitude - boundingData.topLatitude)) + boundingData.topLatitude,
+            long: (Math.random() * (boundingData.topLongitude - boundingData.bottomLongitude)) + boundingData.bottomLongitude
         }
         //test point to see if it is within the polygon as described by lineSegments.
         //Draw a straight line from randomPoint to topLongitude, point's latitude.
