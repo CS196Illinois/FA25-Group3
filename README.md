@@ -11,6 +11,7 @@ Workflow:
 
 - Before starting:
   - Ensure you're on the right branch for the feature you're working on with `git branch`. If not, use `git checkout` to switch to the right one.
+  - `git pull origin main`, if relevant changes have been merged into the main branch since last work session
   - `git pull`
 - Code away!
 - When done:
