@@ -6,3 +6,14 @@ Group Name: Geo-UIUC (temporary)
 Team Members: kxhu2, jcngo2, ags15, manuel9, ezhen11, neilad2, wr6
 
 Project Manager: wllei2
+
+Workflow:
+
+- Before starting:
+  - Ensure you're on the right branch with `git branch`. If not, use `git checkout` to switch to the right one.
+  - `git pull`
+- Code away!
+- When done:
+  - `git add .`
+  - `git commit -m "<Description of what you added>`"
+  - `git push`
