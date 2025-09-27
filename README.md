@@ -10,10 +10,10 @@ Project Manager: wllei2
 Workflow:
 
 - Before starting:
-  - Ensure you're on the right branch with `git branch`. If not, use `git checkout` to switch to the right one.
+  - Ensure you're on the right branch for the feature you're working on with `git branch`. If not, use `git checkout` to switch to the right one.
   - `git pull`
 - Code away!
 - When done:
   - `git add .`
-  - `git commit -m "<Description of what you added>`"
+  - `git commit -m "<Description of what you added>"`
   - `git push`
