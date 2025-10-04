@@ -1,11 +1,12 @@
-// Login
-// Route: /login
-import styles from "./page.module.css";
-
-export default function Login() {
+import "./page.module.css";
+import LoginButton from "../../components/LoginButton";
+// import { signInWithGoogle } from "./firebase-config";
+function Login() {
   return (
-    <div style={styles}>
-	
+    <div className="App"> 
+     <LoginButton />
     </div>
   );
 }
+
+export default Login;
