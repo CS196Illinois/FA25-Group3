@@ -1,5 +1,10 @@
 {
   "dependencies": {
+<<<<<<< HEAD
     "firebase": "^12.3.0"
+=======
+    "next": "^15.5.4",
+    "react": "^19.1.1"
+>>>>>>> 9fb5b926474be934d9991d0f175f91e31cf35abc
   }
 }
