@@ -15,8 +15,8 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <main>{children}</main>
-        <SettingsModal />
-        <br></br>
+        {/* <SettingsModal /> */}
+        {/* <br></br> */}
 
       </body>
     </html>
