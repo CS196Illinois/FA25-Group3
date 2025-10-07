@@ -37,6 +37,9 @@
 
 .logo {
     background-image: url('../../public/geouiuc_logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
     display: flex;
     width: 367px;
     height: 107px;

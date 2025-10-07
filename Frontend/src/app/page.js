@@ -5,11 +5,16 @@
 import React from "react";
 import styles from "./page.module.css";
 import Button from "../components/Button";
+import Link from "next/link";
 
-function startButton() {
-  const handleClick = () => {
-    // window.location.href = "/new-page"; // goes to game page to begin or login page
-  }
+function StartButton() {
+  return (
+    <Link href="/login/page">
+      <button className={styles['start-button']}>
+        <div className={styles['button-text']}>Start!</div>
+      </button>
+    </Link>
+  );
 }
 
 
@@ -28,10 +33,9 @@ export default function Home() {
         </div>
 
         {/* Original Start Button */}
-        <button className={styles['start-button']}> 
-          <div className={styles['button-text']}>Start!</div>
-        </button>
-
+        <div className={styles['logo-container']}>
+          <StartButton />
+        </div>
         {/* 10 Component Buttons
         <div className={styles['button-grid']}>
           <Button 
