@@ -14,7 +14,7 @@ style should be global (i.e. fonts, heading/body text formatting)*/
 }
 
 .welcome-player-text {
-    font-family: "Baloo 2", sans-serif;
+    font-family: "Baloo 2", "sans-serif";
     color: #ffffff; 
     font-size: 64px;
     width: 906px;
