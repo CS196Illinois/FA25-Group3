@@ -1,0 +1,47 @@
+.App {
+  text-align: center;
+  background-image: url('/loginbg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh
+;  margin: 0;
+  padding: 0;}
+
+
+.App-logo {
+  height: 80px;
+  width: 270px;
+  pointer-events: none;
+  padding-top: 0px
+}
+
+
+
+.App-header {
+  background-color: transparent;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 86vh;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  padding-top: 250px;
+  position: relative;
+  z-index: 2;
+  background-image: url('/login_rectangle.png');
+  background-position: center 200px;
+  background-repeat: no-repeat;
+  background-size: 350px 350px;
+}
+
+.App-para {
+  font-size: 32px;
+  margin-bottom: 10px;
+  font-family: "Impact", fantasy;
+  position: relative;
+  z-index: 3;
+  text-shadow: 2px 2px 8px #000;
+}
