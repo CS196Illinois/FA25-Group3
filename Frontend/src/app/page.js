@@ -9,7 +9,7 @@ import Link from "next/link";
 
 function StartButton() {
   return (
-    <Link href="/login/page">
+    <Link href="/login">
       <button className={styles['start-button']}>
         <div className={styles['button-text']}>Start!</div>
       </button>
