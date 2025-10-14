@@ -30,9 +30,9 @@
   margin-bottom: 0.5rem;
 }
 
-input[type="range"] {
+.sliderContainer input[type="range"] {
   width: 100%;
-  accent-color: #ff7f00;
+  accent-color: #ff7f00; /* UIUC orange */
   cursor: pointer;
 }
 .buttons {
