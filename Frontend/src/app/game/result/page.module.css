@@ -2,18 +2,23 @@
 
 body {
     background-color: #192A62;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin-top: 30px;
+    font-size: large;
+    font-family: "Baloo 2";
+}
+
+.resultContainer {
+    text-align: center;
+    margin: 0 auto;
 }
 
 
 .scoreBarContainer {
-    width: 350px;
-    height: 17px;
-    margin-top: 400px;
+    width: 400px;
+    height: 20px;
+    margin: 3px auto;
+    margin-top: 2px;
     background-color: #ffffff;
-    margin-bottom: 10px;
     border-radius: 10px;
 }
 
@@ -24,17 +29,34 @@ body {
     transition: width 0.5s ease-out;
 }
 
+.nextButton:hover {
+    background-color: #b57507;
+
+}
+
+.logo {
+    width: 120px;
+    height: auto;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: block;
+}
+
+.tempmap {
+    width: 85%;
+    height: auto;
+    display: block;
+    margin: auto;
+    margin: -90 auto;
+}
+
 .nextButton { 
     background-color: #CD870E;
     cursor: pointer;
     border: none;
     padding: 7px 10px;
-    margin-top: 50px;
+    margin-top: 25px;
     border-radius: 20px;
     font-size: larger;
-}
-
-.nextButton:hover {
-    background-color: #b57507;
-
 }
