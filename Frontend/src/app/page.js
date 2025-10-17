@@ -1,7 +1,8 @@
 // Home Page
 // Route: /
-import React, { use_state } from "react";
+import React, { usestate } from "react";
 import styles from "./page.module.css";
+import SettingsModal from "@/components/SettingsModal";
 
 function startButton() {
   const handleClick = () => {
@@ -29,6 +30,7 @@ export default function Home() {
           <div className={styles['button-text']}>Start!</div>
         </button>
       </div>
+      <SettingsModal />
     </div>
   );
 }

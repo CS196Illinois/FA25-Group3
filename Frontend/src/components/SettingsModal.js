@@ -3,6 +3,8 @@
 "use client";
 import { useState } from "react";
 import styles from "./SettingsModal.module.css"
+import { FaVolumeUp } from "react-icons/fa";   // Speaker / effect sound icon
+import { FaMusic } from "react-icons/fa";      // Music note icon
 export default function SettingsModal() {
   // useState allows the variable to be changed (i.e. allows the user to close/open menu)
   // use "open" to read the state and "setOpen" to set the state, false (closed) by default
@@ -12,33 +14,57 @@ export default function SettingsModal() {
   // change this stuff below, this is just so we have a way to actually open the settings for now
   return (
     <>
-      <button onClick={() => setOpen(true)}>⚙️ Settings</button>
+      <button className={styles.settingsButton} onClick={() => setOpen(true)}>⚙️</button>
       {open && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
             <h2>Settings</h2>
-            <button onClick={() => setOpen(false)}>Close</button>
+            
             {/* Effect Volume Slider */}
             <div className={styles.sliderContainer}>
-              <label>Effect Volume: {effectVolume}%</label>
+              <label>
+                <FaVolumeUp className={styles.icon} />
+                Effect Volume: {effectVolume}%</label>
               <input 
                 type="range"
                 min="0"
                 max="100"
                 value={effectVolume}
-                onChange={(e) => setEffectVolume(e.target.value)}
+                onChange={(e) => {
+                  setEffectVolume(e.target.value)
+                  const val = e.target.value;  
+                  e.target.style.background = `linear-gradient(to right, #ff7f00 ${val}%, #ffd7a0 ${val}%)`;
+                }}
+                style={{
+                background: `linear-gradient(to right, #ff7f00 ${effectVolume}%, #ffd7a0 ${effectVolume}%)`,
+                }}
               />
               </div>
             {/* Music Volume Slider */}
             <div className={styles.sliderContainer}>
-              <label>Music Volume: {musicVolume}%</label>
+              <label>
+                <FaMusic className={styles.icon} />
+                Music Volume: {musicVolume}%
+              </label>
               <input 
                 type="range"
                 min="0"
                 max="100"
-                value={musicVolume}
-                onChange={(e) => setMusicVolume(e.target.value)}
+                value={musicVolume} 
+                onChange={(e) => {
+                  setMusicVolume(e.target.value)
+                  const val = e.target.value;  
+                  e.target.style.background = `linear-gradient(to right, #ff7f00 ${val}%, #ffd7a0 ${val}%)`;
+                }}
+                style={{
+                background: `linear-gradient(to right, #ff7f00 ${musicVolume}%, #ffd7a0 ${musicVolume}%)`,
+                }}
               />
+            
+            </div>
+            <div className={styles.buttons}>
+            <button onClick={() => setOpen(false)}>Exit</button>
+            <button onClick={() => setOpen(false)}>Resume</button>
             </div>
 
           </div>
