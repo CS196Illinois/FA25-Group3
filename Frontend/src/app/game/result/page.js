@@ -12,33 +12,33 @@ export default function GameplayResult({}) {
 
 
   return (
-    <div style={styles}>
-      <h1>Round #</h1>
+    <>
+      <img src="/geouiuc_logo.png" alt="logo" className={styles.logo} />
+
+      <div className={styles.resultContainer}>
       
-      <img src="logo.png" alt="logo" />
-  
-      <div>
-        {guess ? (
-          <div>
-              <h2>{points} points!</h2>
-              <ScoreBar /> 
-              <p>Your guess was <strong>__</strong> from the correct location!</p>
-          </div>
+        <h1>Round #</h1>
+        <img src="/tempmap.png" alt="tempmap" className={styles.tempmap} />
+    
+        <div>
+          {guess ? (
+            <div>
+              <h4>{points} points!</h4>
+              <ScoreBar />  
+             <b>Your guess was <strong>20</strong> from the correct location!</b>
+            </div>
           ) : (
             <div>
               <h2>{points} points</h2>
-              <ScoreBar /> 
-              <p>You never made a guess</p>
+              <ScoreBar />  
+              <b>You never made a guess</b>
             </div>
           )}
         </div>
-
-
       <NextButton />
-      
-    
 
-    </div>
+      </div>
+    </>
   );
 }
 

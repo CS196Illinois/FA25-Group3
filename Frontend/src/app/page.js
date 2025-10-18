@@ -1,8 +1,11 @@
 // Home Page
 // Route: /
+import React, { use_state } from "react";
+import styles from "./page.module.css";
+
 "use client"
 
-import React from "react";
+import React, {use_state} from "react";
 import styles from "./page.module.css";
 import Button from "../components/Button";
 import Link from "next/link";
@@ -35,6 +38,7 @@ export default function Home() {
           <StartButton />
         </div>
       </div>
+      <SettingsModal />
     </div>
   );
 }
