@@ -17,17 +17,22 @@ export const auth = getAuth(app);
 
 const provider = new GoogleAuthProvider();
 
+// Return the promise so callers can wait for completion and react (e.g., redirect)
 export const signInWithGoogle = () => {
-  signInWithPopup(auth, provider).then((result) => {
-    const name = result.user.displayName;
-    const email = result.user.email;
-    const profilePic = result.user.photoURL;
+  return signInWithPopup(auth, provider)
+    .then((result) => {
+      const name = result.user.displayName;
+      const email = result.user.email;
+      const profilePic = result.user.photoURL;
 
-    localStorage.setItem("name", name)
-    localStorage.setItem("email", email)
-    localStorage.setItem("profilePic", profilePic)
+      localStorage.setItem("name", name)
+      localStorage.setItem("email", email)
+      localStorage.setItem("profilePic", profilePic)
 
-  }).catch((error) => {
-    console.log(error);
-  });
+      return result;
+    })
+    .catch((error) => {
+      console.log(error);
+      throw error;
+    });
 };
