@@ -26,7 +26,6 @@ export default function Gameplay() {
     const [timerSeconds, setTimerSeconds] = useState(119)
     const pano = useRef(null)
 
-
     useEffect(() => {
         console.log("useEffect runs")
         timerInterval = setInterval(() => {
@@ -110,12 +109,11 @@ export default function Gameplay() {
     }
     function ScoreScreen({ show }) {
         if (!show) {
-            return (<div style={{ visibility: "hidden" }}><canvas id={styles["fillScorebar"]} height="10" width="70" ref={scorebarFillRef}></canvas></div>)
+            return (<div style={{ visibility: "hidden", display: "none" }}><canvas id={styles["fillScorebar"]} height="10" width="70" ref={scorebarFillRef}></canvas></div>)
         }
         return (
             <>
                 <SettingsModal />
-
                 <div id={styles.scoreScreen}>
                     <img src="./logo.png" style={{ maxHeight: "60px", marginRight: "calc(100% - 70px)" }} />
                     <div id={styles["roundInformation"]}></div>
