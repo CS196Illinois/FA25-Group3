@@ -7,6 +7,7 @@
   backdrop-filter: blur(8px);
   align-items: center;
   z-index: 1000;
+  margin-left: calc(50%-225px); /* to offset the settings button */
 }
 
 .modalContent {
@@ -92,7 +93,7 @@
 .settingsButton {
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  left: 20px;
   background-color: #13294b;
   color: white;
   border: none;
