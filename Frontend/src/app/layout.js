@@ -1,7 +1,7 @@
 import "./globals.css";
 import SettingsModal from "../components/SettingsModal"
 export const metadata = {
-  title: "Geo-UIUC",
+  title: "Play GeoUIUC!",
   description: "CS124H - FA25 Group 3's Project",
 };
 
