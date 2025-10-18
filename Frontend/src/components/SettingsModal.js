@@ -5,12 +5,24 @@ import { useState } from "react";
 import styles from "./SettingsModal.module.css"
 import { FaVolumeUp } from "react-icons/fa";   // Speaker / effect sound icon
 import { FaMusic } from "react-icons/fa";      // Music note icon
+import { useRouter, usePathname } from "next/navigation"; // use for navigation + knowing where you are
 export default function SettingsModal() {
   // useState allows the variable to be changed (i.e. allows the user to close/open menu)
   // use "open" to read the state and "setOpen" to set the state, false (closed) by default
   const [open, setOpen] = useState(false);
   const [effectVolume, setEffectVolume] = useState(50);
   const [musicVolume, setMusicVolume] = useState(50);
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
+
+  const handleExit = () => {
+    setOpen(false);
+    setTimeout(() => {
+      router.push("/");
+    }, 200);
+  };
   // change this stuff below, this is just so we have a way to actually open the settings for now
   return (
     <>
@@ -62,9 +74,15 @@ export default function SettingsModal() {
               />
             
             </div>
-            <div className={styles.buttons}>
-            <button onClick={() => setOpen(false)}>Exit</button>
-            <button onClick={() => setOpen(false)}>Resume</button>
+             <div className={styles.buttons}>
+              {isHomePage ? (
+                <button onClick={handleExit}>Exit</button>
+              ) : (
+                <>
+                  <button onClick={() => setOpen(false)}>Resume</button>
+                  <button onClick={handleExit}>Exit</button>
+                </>
+              )}
             </div>
 
           </div>
