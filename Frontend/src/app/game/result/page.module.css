@@ -1,0 +1,62 @@
+
+
+body {
+    background-color: #192A62;
+    margin-top: 30px;
+    font-size: large;
+    font-family: "Baloo 2";
+}
+
+.resultContainer {
+    text-align: center;
+    margin: 0 auto;
+}
+
+
+.scoreBarContainer {
+    width: 400px;
+    height: 20px;
+    margin: 3px auto;
+    margin-top: 2px;
+    background-color: #ffffff;
+    border-radius: 10px;
+}
+
+.ScoreBarFill {
+    height: 100%;
+    border-radius: 8px;
+    background-color: #CD870E;
+    transition: width 0.5s ease-out;
+}
+
+.nextButton:hover {
+    background-color: #b57507;
+
+}
+
+.logo {
+    width: 120px;
+    height: auto;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: block;
+}
+
+.tempmap {
+    width: 85%;
+    height: auto;
+    display: block;
+    margin: auto;
+    margin: -90 auto;
+}
+
+.nextButton { 
+    background-color: #CD870E;
+    cursor: pointer;
+    border: none;
+    padding: 7px 10px;
+    margin-top: 25px;
+    border-radius: 20px;
+    font-size: larger;
+}
