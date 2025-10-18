@@ -1,7 +1,6 @@
 import styles from "./page.module.css";
 import LoginButton from "../../components/LoginButton.js";
 // import { signInWithGoogle } from "./firebase-config";
-import { useNavigate } from "react-router-dom";
 import Link from "next/link";
 
 function Login() {
