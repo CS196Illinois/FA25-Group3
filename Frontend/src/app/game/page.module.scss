@@ -1,27 +1,9 @@
-/* @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap'); */
-:root {
-    --darkblue: #3e5ab3;
-    --darkerblue: #192a62;
-    --burntorange: #cd870e;
-    --burntorangeHover: #ffa916;
-    --darkblueHover: #617fe1;
-}
-
-.umbrella,
-.overlay {
-    font-family: "Baloo 2";
-}
-
 html,
 body {
     height: 100%;
     margin: 0;
     padding: 0;
     color: white;
-}
-
-.stupidlogoimage {
-    background-image: url("../../../public/logo.png");
 }
 
 #map,
@@ -63,7 +45,7 @@ body {
     margin: 10px;
 }
 
-#roundCounter {
+#round-counter {
     position: relative;
     width: 200px;
     font-size: 35px;
@@ -79,7 +61,7 @@ body {
     top: 0px;
 }
 
-#guessOverlay {
+#guess-overlay {
     position: absolute;
     bottom: 0;
     z-index: 2;
@@ -117,9 +99,8 @@ body {
 }
 
 #scoreScreen button,
-#guessOverlay button {
+#guess-overlay button {
     height: 40px;
-    font-family: "baloo 2";
     background-color: var(--burntorange);
     border-radius: 10px;
     border: none;
@@ -133,7 +114,7 @@ body {
 }
 
 #scoreScreen button:hover,
-#guessOverlay button:hover {
+#guess-overlay button:hover {
     background-color: var(--burntorangeHover);
 }
 
@@ -145,12 +126,16 @@ body {
     margin-bottom: 15px;
 }
 
-
+.hidden {
+    visibility: hidden;
+    display: none;
+}
 
 #scoreScreen {
     position: absolute;
     top: 0;
     z-index: 5;
+    visibility: hidden;
     background-color: var(--darkblue);
     width: 100%;
     height: 100vh;
