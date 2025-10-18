@@ -1,12 +1,20 @@
 // Home Page
 // Route: /
-import React, { use_state } from "react";
-import styles from "./page.module.css";
+"use client"
 
-function startButton() {
-  const handleClick = () => {
-    // window.location.href = "/new-page"; // goes to game page to begin or login page
-  }
+import React from "react";
+import styles from "./page.module.css";
+import Button from "../components/Button";
+import Link from "next/link";
+
+function StartButton() {
+  return (
+    <Link href="/login">
+      <button className={styles['start-button']}>
+        <div className={styles['button-text']}>Start!</div>
+      </button>
+    </Link>
+  );
 }
 
 
@@ -23,11 +31,9 @@ export default function Home() {
         <div className={styles['text-container2']}>
           <div className={styles['explore-uiuc-text']}>EXPLORE URBANA-CHAMPAIGN!</div>
         </div>
-
-        <button className={styles['start-button']}> 
-        {/* need to add onClick function here */}
-          <div className={styles['button-text']}>Start!</div>
-        </button>
+        <div className={styles['logo-container']}>
+          <StartButton />
+        </div>
       </div>
     </div>
   );
