@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
 
 import styles from "./page.module.css";
+import SettingsModal from '@/components/SettingsModal';
 // import logo from "/logo.png";
 // import font from "https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap"
 let canvasMapWidth
@@ -50,6 +51,7 @@ export default function Gameplay() {
             <UIOverlay></UIOverlay>
             <ControlOverlay></ControlOverlay>
             <ScoreScreen show={showScoreScreen}></ScoreScreen>
+            <SettingsModal />
             <script src="project-scripts/test.js"></script>
             <script
                 src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initialize2&v=weekly"
@@ -111,17 +113,21 @@ export default function Gameplay() {
             return (<div style={{ visibility: "hidden" }}><canvas id={styles["fillScorebar"]} height="10" width="70" ref={scorebarFillRef}></canvas></div>)
         }
         return (
-            <div id={styles.scoreScreen}>
-                <img src="./logo.png" style={{ maxHeight: "60px", marginRight: "calc(100% - 70px)" }} />
-                <div id={styles["roundInformation"]}></div>
-                <canvas id={styles["scoringMap"]}></canvas>
-                <div id={styles["scoreBar"]}>
-                    <div id={styles["score"]}>{score}</div>
-                    <canvas id={styles["fillScorebar"]} height="70" width={window.innerWidth} ref={scorebarFillRef}></canvas>
-                    <div id={styles["guessInfo"]}>{guessInfo}</div>
-                    <button onClick={startRound}>Start next!</button>
+            <>
+                <SettingsModal />
+
+                <div id={styles.scoreScreen}>
+                    <img src="./logo.png" style={{ maxHeight: "60px", marginRight: "calc(100% - 70px)" }} />
+                    <div id={styles["roundInformation"]}></div>
+                    <canvas id={styles["scoringMap"]}></canvas>
+                    <div id={styles["scoreBar"]}>
+                        <div id={styles["score"]}>{score}</div>
+                        <canvas id={styles["fillScorebar"]} height="70" width={window.innerWidth} ref={scorebarFillRef}></canvas>
+                        <div id={styles["guessInfo"]}>{guessInfo}</div>
+                        <button onClick={startRound}>Start next!</button>
+                    </div>
                 </div>
-            </div>
+            </>
         )
     }
     function UIOverlay() {
@@ -142,7 +148,6 @@ function ControlOverlay() {
         <div id={styles.controlsOverlay}>
             <button id={styles["zoomIn"]} onClick={zoomIn()}>+</button>
             <button id={styles["zoomOut"]} onClick={zoomOut()}>-</button>
-            <button id={styles["settings"]}>*</button>
         </div>
     )
 }

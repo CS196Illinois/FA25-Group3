@@ -102,18 +102,28 @@ body {
     backdrop-filter: blur(0.5px);
     padding-top: 0px;
     border-radius: 0px 10px 0px 0px;
+    margin-bottom: 70px;
 }
 
-#controlsOverlay button {
-    background-color: var(--darkblue);
-    border: 2px solid white;
-    margin-top: 15px;
-    width: 50px;
-    height: 50px;
-    border-radius: 25px;
-    color: white;
-    font-size: 30px;
 
+#controlsOverlay button {
+    background-color: #13294b;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 55px;
+    margin-left: 10px;
+    height: 55px;
+    font-size: 2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, background-color 0.2 ease;
+    margin-bottom: 10px;
+}
+
+#controlsOverlay button:hover {
+    transform: scale(1.1);
+    background-color: #1e3a6b;
 }
 
 #scoreScreen button,
@@ -137,9 +147,6 @@ body {
     background-color: var(--burntorangeHover);
 }
 
-#controlsOverlay button:hover {
-    background-color: var(--darkblueHover)
-}
 
 #selectMap {
     margin-bottom: 15px;
