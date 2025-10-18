@@ -86,7 +86,7 @@
 }
 .buttons button:hover {
   transform: scale(1.05);
-  background-color: #1e3a6b;
+  background-color: #ff8f1e;
 }
 
 .settingsButton {
