@@ -10,10 +10,6 @@ function Login() {
         </p>
         <img src="/geouiuc_logo.png" className={styles["App-logo"]} alt="logo" />
         <p>
-
-
-
-          
         </p>
         <LoginButton />
       </header>
