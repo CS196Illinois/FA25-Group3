@@ -13,7 +13,9 @@
   height: 80px;
   width: 270px;
   pointer-events: none;
-  padding-top: 0px
+  padding-top: 0px;
+  font-family: "Impact", fantasy;
+  position: relative;
 }
 
 
