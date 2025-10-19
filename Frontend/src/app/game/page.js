@@ -2,6 +2,7 @@
 import { useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
 
+
 import styles from "./page.module.css";
 // import logo from "/logo.png";
 // import font from "https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap"
