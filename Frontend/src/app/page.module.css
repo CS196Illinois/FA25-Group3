@@ -86,8 +86,6 @@
 
 .start-button {
     display: flex;
-    justify-content: center;
-    align-items: center;
     width: 297px;
     height: 81px;
     flex-shrink: 0;
