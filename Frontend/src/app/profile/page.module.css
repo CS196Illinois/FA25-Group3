@@ -1,0 +1,17 @@
+body {
+    background-color: #192A62;
+    font-size: large;
+    font-family: "Baloo 2";
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 50px;
+}
+
+.profileContainer {
+    text-align: center;
+    
+}
