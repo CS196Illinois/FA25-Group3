@@ -8,10 +8,9 @@ body {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin-top: 50px;
+    margin-top: 200px;
 }
 
 .profileContainer {
     text-align: center;
-    
 }
