@@ -1,7 +1,9 @@
 "use client"
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-
+// import { APIProvider, Map, MapCameraChangedEvent } from '@vis.gl/react-google-maps';
+import { GoogleMap, LoadScript, StreetViewPanorama, useJsApiLoader } from "@react-google-maps/api"
+import getRandomPoint from "./test-scripts/randpoint"
 import styles from "./page.module.css";
 import SettingsModal from '@/components/SettingsModal';
 // import logo from "/logo.png";
@@ -12,9 +14,14 @@ let barInterval
 let fillTicksAcc = 0
 let effectiveScore
 let maxRounds = 3
-let timerSeconds
-let round
+
 let timerInterval
+
+const center = {
+    lat: 40.1106,
+    lng: -88.2073
+}
+
 
 export default function Gameplay() {
     const [showScoreScreen, setShowScoreScreen] = useState(false)
@@ -24,13 +31,17 @@ export default function Gameplay() {
     const [timerContents, setTimerContents] = useState("2:00")
     const scorebarFillRef = useRef(null)
     const [timerSeconds, setTimerSeconds] = useState(119)
+    const [goalPoint, setGoalPoint] = useState(getRandomPoint)
     const pano = useRef(null)
 
+    const { isLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: "AIzaSyAsEYGOKBJHsMyWQ4QvAqAmI_BQm7vxpAk",
+        libraries: ['places']
+    })
     useEffect(() => {
-        console.log("useEffect runs")
         timerInterval = setInterval(() => {
             setTimerSeconds(timerSeconds - 1)
-            console.log(timerSeconds)
             setTimerContents(Math.floor(timerSeconds / 60) + ":" + ("" + (timerSeconds % 60)).padStart(2, "0"))
             if (timerSeconds == 0) {
                 clearInterval(timerInterval)
@@ -42,19 +53,62 @@ export default function Gameplay() {
             clearInterval(timerInterval)
         }
     }, [timerSeconds])
+    useEffect(() => {
+        if (!isLoaded || !window.google) return
+
+        const panorama = new window.google.maps.StreetViewPanorama(pano.current, {
+            position: { lat: 40.1124232, lng: -88.2083016 },
+            pov: { heading: 100, pitch: 0 },
+            zoom: 1,
+            disableDefaultUI: true,
+            enableCloseButton: false,
+            addressControl: false,
+            linksControl: true,
+            panControl: false
+        })
+    }, [isLoaded])
+
+    const GuessOverlay = useCallback(() => {
+        return (
+            <div id={styles["guessOverlay"]}>
+                {isLoaded ? (<GoogleMap
+                    mapContainerStyle={{ width: '400px', height: '400px' }}
+                    center={center}
+                    zoom={16}
+                    options={{
+                        streetViewControl: false,
+                    }}
+                >
+                </GoogleMap>) : <></>}
+                <button onClick={() => { submitGuess() }}>Submit guess!</button>
+            </div>
+        )
+    }, [isLoaded, center])
+
+    const UIOverlay = useCallback(() => {
+        return (<div id={styles["overlay"]}>
+            <Link href="./">
+                <img src="./logo.png" style={{ maxHeight: "60px" }} />
+            </Link>
+            <div id={styles["timer"]}>{timerContents}</div>
+            <div id={styles["roundCounter"]}>Round {currentRound}</div>
+        </div>)
+    }, [timerContents, currentRound])
 
     return (
+
         <div className={styles.umbrella} style={styles}>
-            <div id={styles["pano"]} ref={pano}></div>
-            <GuessOverlay></GuessOverlay>
+            <div ref={pano} style={{
+                width: "100vw",
+                height: "100vh"
+            }}></div>
             <UIOverlay></UIOverlay>
             <ControlOverlay></ControlOverlay>
             <ScoreScreen show={showScoreScreen}></ScoreScreen>
             <SettingsModal />
+            <GuessOverlay></GuessOverlay>
             <script src="project-scripts/test.js"></script>
-            <script
-                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initialize2&v=weekly"
-                defer></script>
+
         </div>
     )
     function submitGuess() {
@@ -99,14 +153,7 @@ export default function Gameplay() {
 
         setShowScoreScreen(false)
     }
-    function GuessOverlay() {
-        return (
-            <div id={styles["guessOverlay"]}>
-                <div id={styles["guessMap"]}></div>
-                <button onClick={() => { submitGuess() }}>Submit guess!</button>
-            </div>
-        )
-    }
+
     function ScoreScreen({ show }) {
         if (!show) {
             return (<div style={{ visibility: "hidden", display: "none" }}><canvas id={styles["fillScorebar"]} height="10" width="70" ref={scorebarFillRef}></canvas></div>)
@@ -117,7 +164,7 @@ export default function Gameplay() {
                 <div id={styles.scoreScreen}>
                     <img src="./logo.png" style={{ maxHeight: "60px", marginRight: "calc(100% - 70px)" }} />
                     <div id={styles["roundInformation"]}></div>
-                    <canvas id={styles["scoringMap"]}></canvas>
+
                     <div id={styles["scoreBar"]}>
                         <div id={styles["score"]}>{score}</div>
                         <canvas id={styles["fillScorebar"]} height="70" width={window.innerWidth} ref={scorebarFillRef}></canvas>
@@ -128,18 +175,11 @@ export default function Gameplay() {
             </>
         )
     }
-    function UIOverlay() {
-        return (<div id={styles["overlay"]}>
-            <Link href="./">
-                <img src="./logo.png" style={{ maxHeight: "60px" }} />
-            </Link>
-            <div id={styles["timer"]}>{timerContents}</div>
-            <div id={styles["roundCounter"]}>Round {currentRound}</div>
-        </div>)
-    }
+
 
 
 }
+
 
 function ControlOverlay() {
     return (
