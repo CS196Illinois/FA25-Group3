@@ -19,3 +19,6 @@ async function initialize2() {
     );
     startRound()
 }
+function test() {
+    console.log("hi")
+}
