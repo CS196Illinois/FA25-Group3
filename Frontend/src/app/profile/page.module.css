@@ -1,0 +1,25 @@
+body {
+    background-color: #192A62;
+    font-size: x-large;
+    font-family: "Baloo 2";
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 170px;
+}
+
+.profileContainer {
+    text-align: center;
+}
+
+.profileContainer2 {
+    margin-left: -70;
+}
+
+.img {
+    width: 250px;
+    height: 250px;
+}
