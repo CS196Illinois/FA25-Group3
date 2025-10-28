@@ -4,11 +4,20 @@
 "use client"
 
 import styles from "./page.module.css";
-import signInWithGoogle  from "@/components/firebase-config";
 import Link from "next/link";
-
+import React, { useState, useEffect } from 'react';
 
 export default function Profile() {
+  const [profilePic, setProfilePic] = useState();
+  const [name, setName] = useState();
+  const [email, setEmail] = useState();
+
+  useEffect(() => {
+    setProfilePic(localStorage.getItem("profilePic"));
+    setName(localStorage.getItem("name"));
+    setEmail(localStorage.getItem("email"));
+  }, []);
+
   return (
     <div className={styles.container}>
       <div>
@@ -18,9 +27,9 @@ export default function Profile() {
       </div>
       
       <div className={styles.profileContainer}>
-        <img className={styles.img} src={localStorage.getItem("profilePic")} />
-        <h1>{localStorage.getItem("name")}</h1>
-        <h3>Email: {localStorage.getItem("email")}</h3>
+        <img className={styles.img} src={profilePic} />
+        <h1>{name}</h1>
+        <h3>Email: {email}</h3>
       </div>
 
       <div className={styles.profileContainer2}>
