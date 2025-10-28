@@ -21,6 +21,7 @@ export default function Login() {
     "/BGvideo6.mp4",
     "/BGvideo7.mp4",
     "/BGvideo8.mp4",
+    "/BGvideo9.mp4",
  ];
 
 
