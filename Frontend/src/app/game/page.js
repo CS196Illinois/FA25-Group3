@@ -9,6 +9,7 @@ import SettingsModal from '@/components/SettingsModal';
 // import logo from "/logo.png";
 // import font from "https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap"
 let canvasMapWidth
+let panorama
 let fillTicks = 0
 let barInterval
 let fillTicksAcc = 0
@@ -55,19 +56,36 @@ export default function Gameplay() {
     }, [timerSeconds])
     useEffect(() => {
         if (!isLoaded || !window.google) return
-        let point = getRandomPoint()
+        let point = { lat: getRandomPoint().lat, lng: getRandomPoint().long }
         console.log(point)
-        const panorama = new window.google.maps.StreetViewPanorama(pano.current, {
-            position: { lat: point.lat, lng: point.long, radius: 100000 },
+
+        panorama = new window.google.maps.StreetViewPanorama(pano.current)
+        const service = new google.maps.StreetViewService()
+        service.getPanorama({ location: point, radius: 1000 }).then(processData)
+        /*, {
+            position: { lat: point.lat, lng: point.long },
             pov: { heading: 100, pitch: 0 },
             zoom: 1,
+            // preference: StreetViewPreference.NEAREST,
             disableDefaultUI: true,
             enableCloseButton: false,
             addressControl: false,
+            radius: 1000,
             linksControl: true,
             panControl: false,
-            radius: 100
-        })
+        }) */
+        function processData({ data }) {
+            console.log(data)
+
+            if (data.copyright.indexOf("Google") < 1) {
+                point = { lat: getRandomPoint().lat, lng: getRandomPoint().long }
+                service.getPanorama({ location: point, radius: 1000 }).then(processData)
+            }
+            panorama.setPano(data.location.pano);
+            panorama.setVisible(true);
+            panorama.setOptions({ zoomControl: false, linksControl: true, addressControl: false, panControl: false })
+        }
+
     }, [isLoaded])
 
     const GuessOverlay = useCallback(() => {
@@ -149,11 +167,24 @@ export default function Gameplay() {
         // //     return
         // // }
         // // timerSeconds = 121
+        setGoalPoint()
+        const service = new google.maps.StreetViewService()
+        service.getPanorama({ location: { lat: getRandomPoint().lat, lng: getRandomPoint().long }, radius: 1000 }).then(processData)
         // // updateTimer()
         setTimerSeconds(119)
         setTimerContents("2:00")
 
         setShowScoreScreen(false)
+        function processData({ data }) {
+            console.log(data)
+
+            if (data.copyright.indexOf("Google") < 1) {
+                service.getPanorama({ location: { lat: getRandomPoint().lat, lng: getRandomPoint().long }, radius: 1000 }).then(processData)
+            }
+            panorama.setPano(data.location.pano);
+            panorama.setVisible(true);
+            panorama.setOptions({ zoomControl: false, linksControl: true, addressControl: false, panControl: false })
+        }
     }
 
     function ScoreScreen({ show }) {

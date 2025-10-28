@@ -73,7 +73,7 @@ export function getRandomPoint() {
 
 for (let i = 0; i < 100; i++) {
     let p = getRandomPoint()
-    console.log(p.lat.toString().substring(0, 6) + ", " + p.long.toString().substring(0, 7))
+    // console.log(p.lat.toString().substring(0, 6) + ", " + p.long.toString().substring(0, 7))
 }
 
 //when making the random point fit for consumption, please refer to https://xkcd.com/2170 :D
