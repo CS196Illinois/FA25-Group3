@@ -3,7 +3,7 @@ import { useRef, useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 // import { APIProvider, Map, MapCameraChangedEvent } from '@vis.gl/react-google-maps';
 import { GoogleMap, LoadScript, StreetViewPanorama, useJsApiLoader } from "@react-google-maps/api"
-import getRandomPoint from "./test-scripts/randpoint"
+import { getRandomPoint } from "./test-scripts/randpoint.js"
 import styles from "./page.module.css";
 import SettingsModal from '@/components/SettingsModal';
 // import logo from "/logo.png";
@@ -55,16 +55,18 @@ export default function Gameplay() {
     }, [timerSeconds])
     useEffect(() => {
         if (!isLoaded || !window.google) return
-
+        let point = getRandomPoint()
+        console.log(point)
         const panorama = new window.google.maps.StreetViewPanorama(pano.current, {
-            position: { lat: 40.1124232, lng: -88.2083016 },
+            position: { lat: point.lat, lng: point.long, radius: 100000 },
             pov: { heading: 100, pitch: 0 },
             zoom: 1,
             disableDefaultUI: true,
             enableCloseButton: false,
             addressControl: false,
             linksControl: true,
-            panControl: false
+            panControl: false,
+            radius: 100
         })
     }, [isLoaded])
 
