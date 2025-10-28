@@ -15,6 +15,7 @@ export default function Login() {
  const videos = [
    "/BGvideo1.mp4",
     "/BGvideo2.mp4",
+    "/BGvideo3.mp4",
  ];
 
 
