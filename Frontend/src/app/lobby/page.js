@@ -1,9 +1,9 @@
 "use client";
 
 
-import styles from "../lobby/page.module.css";
+import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import signInWithGoogle  from "@/components/firebase-config";
 import { useState, useRef, useEffect } from "react";
 
 
@@ -44,6 +44,14 @@ export default function Lobby() {
  const [active, setActive] = useState(true);
  const videoARef = useRef(null);
  const videoBRef = useRef(null);
+ const [name, setName] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedName = localStorage.getItem("name");
+      if (storedName) setName(storedName);
+    }
+  }, []);
 
 
  useEffect(() => {
@@ -87,7 +95,8 @@ export default function Lobby() {
        />
      </div>
      <div className={styles.content}>
-  <header className={styles["App-header"]}>
+    <header className={styles["App-header"]}>
+      <p>Hi, {name ? name : "Guest"}!</p>
     <div className={styles["score"]}>
       <img
         src="/trophy.png"
@@ -104,6 +113,7 @@ export default function Lobby() {
     />
 
     <p className={styles["App-para"]}>Game Mode: Outdoor</p>
+    
   </header>
 </div>
 
