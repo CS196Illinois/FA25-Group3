@@ -102,3 +102,59 @@
  flex-direction: column;
  z-index: 2;              
 }
+.App-header {
+ width: 100%;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ justify-content: center;
+ color: white;
+ font-size: calc(10px + 2vmin);
+ position: relative;
+ z-index: 2;
+ padding: 0;
+ background: transparent;
+ display: flex;
+flex-direction: column; 
+align-items: center;
+margin-top: 18vh; 
+}
+.App-logo {
+ height: 70%;
+ width: 70%;
+ pointer-events: none;
+ padding-top: 1vh;
+ font-family: "Impact", fantasy;
+ position: relative;
+ align-items: center;
+  justify-content: center;
+}
+.App-para {
+ font-size: 1.5em;
+ margin-bottom: 0px;
+ font-family: "Impact", fantasy;
+ position: relative;
+ z-index: 3;
+ text-shadow: 2px 2px 8px #000;
+ padding-top: 5vh;
+}
+
+
+.score {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #FFF;
+   text-align: center;
+   font-family: "Baloo 2";
+   font-size: 2.2em;
+   font-style: normal;
+   font-weight: 700;
+   line-height: normal;
+
+}
+
+.trophy {
+  width: 60px;
+  height: auto;
+}

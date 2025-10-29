@@ -86,6 +86,28 @@ export default function Lobby() {
          style={{ display: active ? "none" : "block" }}
        />
      </div>
+     <div className={styles.content}>
+  <header className={styles["App-header"]}>
+    <div className={styles["score"]}>
+      <img
+        src="/trophy.png"
+        className={styles["trophy"]}
+        alt="trophy"
+      />
+      <span>2100</span>
+    </div>
+
+    <img
+      src="/geouiuc_logo.png"
+      className={styles["App-logo"]}
+      alt="logo"
+    />
+
+    <p className={styles["App-para"]}>Game Mode: Outdoor</p>
+  </header>
+</div>
+
+
      <div className={styles.logoContainer}>
          <StartButton />
        </div>
