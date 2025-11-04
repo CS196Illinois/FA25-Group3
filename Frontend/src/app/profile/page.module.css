@@ -13,7 +13,14 @@ body {
 
 .profileContainer {
     text-align: center;
+<<<<<<< HEAD
     
+=======
+}
+
+.profileContainer2 {
+    margin-left: -150;
+>>>>>>> f0964b5aa43635331bc30e268d8d1250d1ee1ae9
 }
 
 .img {

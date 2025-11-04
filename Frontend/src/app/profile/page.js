@@ -9,6 +9,8 @@
 import styles from "./page.module.css";
 import Link from "next/link";
 import React, { useState, useEffect } from 'react';
+import SignOut from "@/components/SignoutButton";
+import DeleteAccount from "@/components/DeleteAccountButton";
 
 export default function Profile() {
   const [profilePic, setProfilePic] = useState();
