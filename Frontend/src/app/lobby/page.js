@@ -111,7 +111,7 @@ export default function Lobby() {
       <div className={styles.content}>
         <header className={styles["App-header"]}>
           <div className={styles.profile}>
-            <p className={styles["profile-para"]}>Hi, {name ? name : "Guest"}!</p>
+            <p className={styles["profile-para"]}>Hi, {name ? name : "Player"}!</p>
             <button 
               className={styles.profileButton}
               onClick={() => router.push("/profile")}
