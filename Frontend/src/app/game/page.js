@@ -25,6 +25,7 @@ const center = {
 
 
 export default function Gameplay() {
+    // const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
     const [showScoreScreen, setShowScoreScreen] = useState(false)
     const [score, setScore] = useState()
     const [guessInfo, setGuessInfo] = useState()
