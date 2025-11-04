@@ -31,7 +31,9 @@ const videos = [
   "/BGvideo9.mp4",
 ];
 
+
 export default function Lobby() {
+  const [profilePic, setProfilePic] = useState();
   const router = useRouter();
   const handleLoginSuccess = () => router.push("/lobby");
 
@@ -47,6 +49,9 @@ export default function Lobby() {
       if (storedName) setName(storedName);
     }
   }, []);
+  useEffect(() => {
+      setProfilePic(localStorage.getItem("profilePic"));
+    }, []);
 
   useEffect(() => {
     const currentVideo = active ? videoARef.current : videoBRef.current;
@@ -111,11 +116,7 @@ export default function Lobby() {
               className={styles.profileButton}
               onClick={() => router.push("/profile")}
             >
-              <img
-                src="/profile-icon.png"
-                className={styles.profileImage}
-                alt="profile"
-              />
+              <img className={styles.profileImage} referrerPolicy="no-referrer" src={profilePic} />
             </button>
           </div>
           
