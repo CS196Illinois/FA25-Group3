@@ -23,16 +23,6 @@ export default function Profile() {
     setEmail(localStorage.getItem("email"));
   }, []);
 
-  const [profilePic, setProfilePic] = useState();
-  const [name, setName] = useState();
-  const [email, setEmail] = useState();
-
-  useEffect(() => {
-    setProfilePic(localStorage.getItem("profilePic"));
-    setName(localStorage.getItem("name"));
-    setEmail(localStorage.getItem("email"));
-  }, []);
-
   return (
     <div className={styles['container-with-background']}>
       <div>
