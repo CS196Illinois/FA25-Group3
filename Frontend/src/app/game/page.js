@@ -1,8 +1,8 @@
 "use client"
 import { useRef, useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-// import { APIProvider, Map, MapCameraChangedEvent } from '@vis.gl/react-google-maps';
-import { GoogleMap, LoadScript, StreetViewPanorama, useJsApiLoader } from "@react-google-maps/api"
+import { GoogleMap, MarkerF, LoadScript, StreetViewPanorama, useJsApiLoader } from "@react-google-maps/api"
+
 import { getRandomPoint } from "./test-scripts/randpoint.js"
 import styles from "./page.module.css";
 import SettingsModal from '@/components/SettingsModal';
@@ -15,6 +15,14 @@ let barInterval
 let fillTicksAcc = 0
 let effectiveScore
 let maxRounds = 3
+let pinPosition = {
+    lat: 0,
+    lng: 0
+}
+
+const CAMPUS_MAP_BOUNDS = {
+    south: -89, east: 40, north: -88, west: 41
+}
 
 let timerInterval
 
@@ -23,9 +31,7 @@ const center = {
     lng: -88.2073
 }
 
-
 export default function Gameplay() {
-    // const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
     const [showScoreScreen, setShowScoreScreen] = useState(false)
     const [score, setScore] = useState()
     const [guessInfo, setGuessInfo] = useState()
@@ -34,6 +40,7 @@ export default function Gameplay() {
     const scorebarFillRef = useRef(null)
     const [timerSeconds, setTimerSeconds] = useState(119)
     const [goalPoint, setGoalPoint] = useState(getRandomPoint)
+    const [userGuessPosition, setUserGuessPosition] = useState({ lat: 0, lng: 0 })
     const pano = useRef(null)
 
     const { isLoaded } = useJsApiLoader({
@@ -63,6 +70,8 @@ export default function Gameplay() {
         panorama = new window.google.maps.StreetViewPanorama(pano.current)
         const service = new google.maps.StreetViewService()
         service.getPanorama({ location: point, radius: 1000 }).then(processData)
+
+
         /*, {
             position: { lat: point.lat, lng: point.long },
             pov: { heading: 100, pitch: 0 },
@@ -84,27 +93,41 @@ export default function Gameplay() {
             }
             panorama.setPano(data.location.pano);
             panorama.setVisible(true);
-            panorama.setOptions({ zoomControl: false, linksControl: true, addressControl: false, panControl: false })
+            panorama.setOptions({ zoomControl: false, linksControl: true, addressControl: false, panControl: false, showRoadLabels: false })
         }
 
     }, [isLoaded])
-
     const GuessOverlay = useCallback(() => {
         return (
             <div id={styles["guessOverlay"]}>
                 {isLoaded ? (<GoogleMap
-                    mapContainerStyle={{ width: '400px', height: '400px' }}
+                    mapContainerStyle={{ width: '400px', height: '400px', marginBottom: "15px" }}
                     center={center}
                     zoom={16}
+                    onClick={doThing}
                     options={{
                         streetViewControl: false,
+                        // restriction: {
+                        //     latLngBounds: CAMPUS_MAP_BOUNDS,
+                        //     strictBounds: false,
+                        // }
                     }}
-                >
+                ><MarkerF position={userGuessPosition}>Guess position</MarkerF>
                 </GoogleMap>) : <></>}
                 <button onClick={() => { submitGuess() }}>Submit guess!</button>
             </div>
         )
     }, [isLoaded, center])
+    function doThing(e) {
+        console.log({
+            lat: e.latLng.lat(),
+            lng: e.latLng.lng()
+        })
+        setUserGuessPosition({
+            lat: e.latLng.lat(),
+            lng: e.latLng.lng()
+        })
+    }
 
     const UIOverlay = useCallback(() => {
         return (<div id={styles["overlay"]}>
@@ -196,7 +219,17 @@ export default function Gameplay() {
             <>
                 <SettingsModal />
                 <div id={styles.scoreScreen}>
+
                     <img src="./logo.png" style={{ maxHeight: "60px", marginRight: "calc(100% - 70px)" }} />
+                    {isLoaded ? (<GoogleMap
+                        mapContainerStyle={{ width: '75vw', height: '400px', marginLeft: "12.5vw", marginBottom: "10px" }}
+                        center={center}
+                        zoom={16}
+                        options={{
+                            streetViewControl: false,
+                        }}
+                    >
+                    </GoogleMap>) : <></>}
                     <div id={styles["roundInformation"]}></div>
 
                     <div id={styles["scoreBar"]}>
