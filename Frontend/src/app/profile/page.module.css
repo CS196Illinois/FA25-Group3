@@ -13,7 +13,10 @@ body {
 
 .profileContainer {
     text-align: center;
-    
+}
+
+.profileContainer2 {
+    margin-left: -150;
 }
 
 .img {
