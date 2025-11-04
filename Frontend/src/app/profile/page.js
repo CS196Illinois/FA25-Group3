@@ -21,28 +21,33 @@ export default function Profile() {
   }, []);
 
   return (
-    <div className={styles.container}>
+    <div>
       <div>
         <Link href= "/">
-          <img src="./logo.png" style={{ maxHeight: "60px" }} />
+          <img src="./logo.png" className={styles.logo} />
         </Link>
       </div>
-      
-      <div className={styles.profileContainer}>
-        <img className={styles.img} src={profilePic} />
-        <h1>{name}</h1>
-        <h3>Email: {email}</h3>
-        <SignOut />
-        <br />
-        <DeleteAccount />
-      </div>
 
-      <div className={styles.profileContainer2}>
-        <h1>High Score: {}</h1>
-        <h1>Total Points: {}</h1>
-        <h1>Daily Streak: {}</h1>
-      </div>
+      <div className={styles.container}>
+        
+        
+        <div className={styles.profileContainer}>
+          <img className={styles.img} referrerPolicy="no-referrer" src={profilePic} />
+          <h1>{name}</h1>
+          <h3>Email: {email}</h3>
+          
+        </div>
+
+        <div className={styles.profileContainer2}>
+          <h1>High Score: {}</h1>
+          <h1>Total Points: {}</h1>
+          <h1>Daily Streak: {}</h1>
+          <SignOut />
+          <br />
+          <DeleteAccount />
+        </div>
       
+      </div>
     </div>
   );
 }

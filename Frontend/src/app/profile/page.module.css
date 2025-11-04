@@ -16,10 +16,14 @@ body {
 }
 
 .profileContainer2 {
-    margin-left: -70;
+    margin-left: -150;
 }
 
 .img {
     width: 250px;
     height: 250px;
+}
+
+.logo {
+    height: 60px;
 }

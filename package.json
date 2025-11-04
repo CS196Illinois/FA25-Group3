@@ -3,5 +3,25 @@
     "firebase": "^12.3.0",
     "next": "^15.5.4",
     "react": "^19.1.1"
-  }
+  },
+  "name": "fa25-group3",
+  "version": "1.0.0",
+  "description": "Group Name: Geo-UIUC (temporary)",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CS196Illinois/FA25-Group3.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/CS196Illinois/FA25-Group3/issues"
+  },
+  "homepage": "https://github.com/CS196Illinois/FA25-Group3#readme"
 }
