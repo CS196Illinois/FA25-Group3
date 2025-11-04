@@ -2,7 +2,7 @@
   position: relative;
   height: 100vh;
   width: 100%;
-  overflow: hidden;
+  overflow: auto;
   font-family: sans-serif;
 }
 
@@ -41,39 +41,54 @@
   z-index: 1;
 }
 
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  position: relative;
+  z-index: 2;
+  padding-bottom: clamp(30px, 5vh, 60px);
+}
+
 .logoContainer {
   display: flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
-  top: 83%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 21px;
+  margin-top: clamp(60px, 9vh, 130px);
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: clamp(15px, 2vw, 21px);
   flex-direction: column;
   background: #CD870E;
   z-index: 2;
+  padding: clamp(5px, 1vh, 10px);
+  width: fit-content;
 }
+
 
 .startButton {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 20vw;
-  height: 5vh;
-  border-radius: 21px;
+  width: 18vw;
+  height: 6vh;
+  border-radius: clamp(15px, 2vw, 21px);
   border: 1px solid #000;
   background: #CD870E;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   text-shadow: 0 4px 4px rgba(0, 0, 0, 1);
+  cursor: pointer;
+  padding: 1vh 1.5vw;
 }
 
 .buttonText {
   color: #FFF;
   text-align: center;
   font-family: "Baloo 2";
-  font-size: 3.2em;
+  font-size: clamp(1rem, 2.5vw, 2.5em);
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .App-header {
@@ -84,7 +99,7 @@
   justify-content: center;
   color: #FFF;
   font-family: "Baloo 2";
-  font-size: 2.2em;
+  font-size: clamp(1.5rem, 3.5vw, 3em);
   font-weight: 700;
   margin-top: 2vh;
   background: transparent;
@@ -95,8 +110,9 @@
 }
 
 .App-logo {
-  height: 70%;
-  width: 70%;
+  width: 90vw;
+  max-width: 1200px;
+  height: auto;
   pointer-events: none;
   padding-top: 1vh;
   font-family: "Impact", fantasy;
@@ -107,43 +123,43 @@
 }
 
 .App-para {
-  font-size: 1.5em;
+  font-size: clamp(1.5rem, 3vw, 2.5em);
   margin-bottom: 0;
+  margin-top: 2vh;
   font-family: "Impact", fantasy;
   position: relative;
   z-index: 3;
   text-shadow: 2px 2px 8px #000;
-  padding-top: 5vh;
 }
 
 .score {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 1.5vw;
   color: #FFF;
   font-family: "Baloo 2";
-  font-size: 2.2em;
+  font-size: clamp(1.5rem, 3.5vw, 3em);
   font-weight: 700;
   line-height: normal;
-  margin-top: 120px;
+  margin-top: clamp(10vh, 15vh, 22vh); 
 }
 
+
 .trophy {
-  width: 60px;
+  width: clamp(50px, 6vw, 75px);
   height: auto;
-  margin-top: 5px;
 }
 
 .App-header .profile {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 2vh;
+  right: 2vw;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 1.5vw;
   color: #FFF;
   font-family: "Baloo 2";
-  font-size: 1.2em;
+  font-size: clamp(1rem, 2vw, 1.6em);
   font-weight: 700;
 }
 
@@ -173,10 +189,68 @@
 }
 
 .profileImage {
-  width: 50px;
-  height: 50px;
+  width: clamp(45px, 5vw, 65px);
+  height: clamp(45px, 5vw, 65px);
   border-radius: 50%;
   border: 2px solid #FFF;
   object-fit: cover;
   display: block;
+}
+
+@media (max-width: 768px) {
+  .App-logo {
+    width: 85vw;
+  }
+  
+  .startButton {
+    width: 35vw;
+    height: 7vh;
+  }
+  
+  .buttonText {
+    font-size: clamp(1rem, 4vw, 2em);
+  }
+  
+  .score {
+    margin-top: 4vh;
+  }
+  
+  .logoContainer {
+    margin-top: clamp(15px, 2.5vh, 35px);
+  }
+}
+
+@media (max-height: 600px) {
+  .score {
+    margin-top: 3vh;
+  }
+  
+  .App-logo {
+    width: 70vw;
+  }
+  
+  .startButton {
+    height: 5vh;
+  }
+  
+  .logoContainer {
+    margin-top: clamp(12px, 2vh, 30px);
+  }
+  
+  .content {
+    padding-bottom: clamp(20px, 3vh, 40px);
+  }
+  
+  .App-header {
+    margin-top: 1vh;
+  }
+  
+  .App-logo {
+    padding-top: 0.5vh;
+  }
+  
+  .App-para {
+    margin-top: 1vh;
+  }
+  
 }
