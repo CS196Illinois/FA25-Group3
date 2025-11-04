@@ -1,5 +1,6 @@
 "use client"
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useRef, useState, useEffect, useCallback, React } from 'react'
+
 import Link from 'next/link'
 import { GoogleMap, MarkerF, LoadScript, StreetViewPanorama, useJsApiLoader } from "@react-google-maps/api"
 
@@ -42,7 +43,7 @@ export default function Gameplay() {
     const [goalPoint, setGoalPoint] = useState(getRandomPoint)
     const [userGuessPosition, setUserGuessPosition] = useState({ lat: 0, lng: 0 })
     const pano = useRef(null)
-
+    const [visible, setVisible] = useState(false)
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: "AIzaSyAsEYGOKBJHsMyWQ4QvAqAmI_BQm7vxpAk",
@@ -119,14 +120,11 @@ export default function Gameplay() {
         )
     }, [isLoaded, center])
     function doThing(e) {
-        console.log({
-            lat: e.latLng.lat(),
-            lng: e.latLng.lng()
-        })
         setUserGuessPosition({
             lat: e.latLng.lat(),
             lng: e.latLng.lng()
         })
+        setVisible(true)
     }
 
     const UIOverlay = useCallback(() => {
