@@ -1,11 +1,13 @@
 "use client"
-import { useRef, useState, useEffect, useCallback } from 'react'
-import Link from 'next/link'
+import { useRef, useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 // import { APIProvider, Map, MapCameraChangedEvent } from '@vis.gl/react-google-maps';
-import { GoogleMap, LoadScript, StreetViewPanorama, useJsApiLoader } from "@react-google-maps/api"
-import getRandomPoint from "./test-scripts/randpoint"
+import { GoogleMap, MarkerF, LoadScript, StreetViewPanorama, useJsApiLoader } from "@react-google-maps/api";
+import { AdvancedMarker } from '@vis.gl/react-google-maps';
+
 import styles from "./page.module.css";
 import SettingsModal from '@/components/SettingsModal';
+import { getRandomPoint } from "./test-scripts/randpoint.mjs";
 // import logo from "/logo.png";
 // import font from "https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap"
 let canvasMapWidth
@@ -21,7 +23,6 @@ const center = {
     lat: 40.1106,
     lng: -88.2073
 }
-
 
 export default function Gameplay() {
     const [showScoreScreen, setShowScoreScreen] = useState(false)
@@ -39,6 +40,7 @@ export default function Gameplay() {
         googleMapsApiKey: "AIzaSyAsEYGOKBJHsMyWQ4QvAqAmI_BQm7vxpAk",
         libraries: ['places']
     })
+
     useEffect(() => {
         timerInterval = setInterval(() => {
             setTimerSeconds(timerSeconds - 1)
@@ -55,9 +57,10 @@ export default function Gameplay() {
     }, [timerSeconds])
     useEffect(() => {
         if (!isLoaded || !window.google) return
-
+        let point = getRandomPoint()
+        console.log(point)
         const panorama = new window.google.maps.StreetViewPanorama(pano.current, {
-            position: { lat: 40.1124232, lng: -88.2083016 },
+            position: { lat: point.lat, lng: point.long, radius: 100 },
             pov: { heading: 100, pitch: 0 },
             zoom: 1,
             disableDefaultUI: true,
@@ -69,6 +72,15 @@ export default function Gameplay() {
     }, [isLoaded])
 
     const GuessOverlay = useCallback(() => {
+        {
+            const [marker, setMarker] = useState(null);
+
+            const handleMapClick = useCallback((event) => {
+                const lat = event.latLng.lat();
+                const lng = event.latLng.lng();
+                setMarker({ lat, lng });
+            }, []);
+        }
         return (
             <div id={styles["guessOverlay"]}>
                 {isLoaded ? (<GoogleMap
@@ -78,7 +90,8 @@ export default function Gameplay() {
                     options={{
                         streetViewControl: false,
                     }}
-                >
+                >      {marker && <MarkerF position={marker} title="You clicked here!" />}
+
                 </GoogleMap>) : <></>}
                 <button onClick={() => { submitGuess() }}>Submit guess!</button>
             </div>
@@ -117,11 +130,10 @@ export default function Gameplay() {
         canvasMapWidth = window.innerWidth
         scorebarFillRef.current["width"] = window.innerWidth
         let distance = 0
-        // let distance = Math.sqrt(Math.pow(currentRoundData.guess.lat - currentRoundData.point.lat, 2) + Math.pow(currentRoundData.guess.long - currentRoundData.point.long, 2))
 
+        // let distance = Math.sqrt(Math.pow(currentRoundData.guess.lat - currentRoundData.point.lat, 2) + Math.pow(currentRoundData.guess.long - currentRoundData.point.long, 2))
         // score = 5000 * (1 - (Math.PI * distance * distance) / (1))
         effectiveScore = 4700
-
 
         clearInterval(timerInterval)
         clearInterval(barInterval)
@@ -152,6 +164,15 @@ export default function Gameplay() {
         setTimerContents("2:00")
 
         setShowScoreScreen(false)
+
+        const pin = new google.maps.marker.PinElement();
+        const marker = new google.maps.marker.AdvancedMarkerElement({
+            position,
+            map,
+            title,
+            content: pin.element,
+            gmpClickable: true,
+        });
     }
 
     function ScoreScreen({ show }) {
@@ -175,11 +196,7 @@ export default function Gameplay() {
             </>
         )
     }
-
-
-
 }
-
 
 function ControlOverlay() {
     return (
@@ -228,6 +245,4 @@ function fillGuessBar(bar) {
     bar.moveTo(.1 * canvasMapWidth, 35)
     bar.lineTo((.1 * canvasMapWidth) + (fillTicks * 3), 35)
     bar.stroke()
-
 }
-
