@@ -3,11 +3,24 @@
 
 "use client"
 
+
+"use client"
+
 import styles from "./page.module.css";
 import Link from "next/link";
 import React, { useState, useEffect } from 'react';
 
 export default function Profile() {
+  const [profilePic, setProfilePic] = useState();
+  const [name, setName] = useState();
+  const [email, setEmail] = useState();
+
+  useEffect(() => {
+    setProfilePic(localStorage.getItem("profilePic"));
+    setName(localStorage.getItem("name"));
+    setEmail(localStorage.getItem("email"));
+  }, []);
+
   const [profilePic, setProfilePic] = useState();
   const [name, setName] = useState();
   const [email, setEmail] = useState();

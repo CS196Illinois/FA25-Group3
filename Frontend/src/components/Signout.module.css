@@ -1,0 +1,11 @@
+.signout {
+    border-radius: 17px;
+    font-family: "Baloo 2";
+    font-size: larger;
+    font-weight: 600;
+    background-color: #CD870E;
+    cursor: pointer;
+    border: none;
+    padding: 6px 25px;
+    
+}
