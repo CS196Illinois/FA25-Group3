@@ -16,6 +16,7 @@ let barInterval
 let fillTicksAcc = 0
 let effectiveScore
 let maxRounds = 3
+let affectCenter = true
 let pinPosition = {
     lat: 0,
     lng: 0
@@ -40,10 +41,12 @@ export default function Gameplay() {
     const [timerContents, setTimerContents] = useState("2:00")
     const scorebarFillRef = useRef(null)
     const [timerSeconds, setTimerSeconds] = useState(119)
-    const [goalPoint, setGoalPoint] = useState(getRandomPoint)
+    const [goalPoint, setGoalPoint] = useState(null)
     const [userGuessPosition, setUserGuessPosition] = useState({ lat: 0, lng: 0 })
     const pano = useRef(null)
     const [visible, setVisible] = useState(false)
+    const [mapCenter, setMapCenter] = useState(center)
+    const [map, setMap] = useState()
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: "AIzaSyAsEYGOKBJHsMyWQ4QvAqAmI_BQm7vxpAk",
@@ -67,6 +70,7 @@ export default function Gameplay() {
         if (!isLoaded || !window.google) return
         let point = { lat: getRandomPoint().lat, lng: getRandomPoint().long }
         console.log(point)
+        setGoalPoint(point)
 
         panorama = new window.google.maps.StreetViewPanorama(pano.current)
         const service = new google.maps.StreetViewService()
@@ -81,7 +85,7 @@ export default function Gameplay() {
             disableDefaultUI: true,
             enableCloseButton: false,
             addressControl: false,
-            radius: 1000,
+            radius: 100}0,
             linksControl: true,
             panControl: false,
         }) */
@@ -90,6 +94,7 @@ export default function Gameplay() {
 
             if (data.copyright.indexOf("Google") < 1) {
                 point = { lat: getRandomPoint().lat, lng: getRandomPoint().long }
+                setGoalPoint(point)
                 service.getPanorama({ location: point, radius: 1000 }).then(processData)
             }
             panorama.setPano(data.location.pano);
@@ -103,9 +108,21 @@ export default function Gameplay() {
             <div id={styles["guessOverlay"]}>
                 {isLoaded ? (<GoogleMap
                     mapContainerStyle={{ width: '400px', height: '400px', marginBottom: "15px" }}
-                    center={center}
+                    center={mapCenter}
                     zoom={16}
                     onClick={doThing}
+                    onLoad={(e) => {
+                        if (!map) {
+                            setMap(e)
+                        }
+                    }}
+                    onCenterChanged={() => {
+                        if (typeof map == "undefined") {
+                            setMapCenter(center)
+                            return
+                        }
+                        setMapCenter({ lat: map.getCenter().lat(), lng: map.getCenter().lng() })
+                    }}
                     options={{
                         streetViewControl: false,
                         // restriction: {
@@ -114,19 +131,24 @@ export default function Gameplay() {
                         // }
                     }}
                 ><MarkerF position={userGuessPosition}>Guess position</MarkerF>
-                </GoogleMap>) : <></>}
+                </GoogleMap>) : <></>
+                }
                 <button onClick={() => { submitGuess() }}>Submit guess!</button>
-            </div>
+            </div >
         )
-    }, [isLoaded, center])
+    }, [isLoaded, userGuessPosition, affectCenter])
     function doThing(e) {
+        // console.log(e)
         setUserGuessPosition({
             lat: e.latLng.lat(),
             lng: e.latLng.lng()
         })
         setVisible(true)
+        setMapCenter({
+            lat: e.latLng.lat(),
+            lng: e.latLng.lng()
+        })
     }
-
     const UIOverlay = useCallback(() => {
         return (<div id={styles["overlay"]}>
             <Link href="./">
@@ -189,9 +211,12 @@ export default function Gameplay() {
         // //     return
         // // }
         // // timerSeconds = 121
-        setGoalPoint()
+        let pt = { lat: getRandomPoint().lat, lng: getRandomPoint().long }
+
+        setGoalPoint(pt)
+        console.log("Goal Point: " + goalPoint)
         const service = new google.maps.StreetViewService()
-        service.getPanorama({ location: { lat: getRandomPoint().lat, lng: getRandomPoint().long }, radius: 1000 }).then(processData)
+        service.getPanorama({ location: pt, radius: 1000 }).then(processData)
         // // updateTimer()
         setTimerSeconds(119)
         setTimerContents("2:00")
@@ -199,10 +224,12 @@ export default function Gameplay() {
         setShowScoreScreen(false)
         function processData({ data }) {
             console.log(data)
+            pt = { lat: getRandomPoint().lat, lng: getRandomPoint().long }
 
             if (data.copyright.indexOf("Google") < 1) {
-                service.getPanorama({ location: { lat: getRandomPoint().lat, lng: getRandomPoint().long }, radius: 1000 }).then(processData)
+                service.getPanorama({ location: pt, radius: 1000 }).then(processData)
             }
+            setGoalPoint(pt)
             panorama.setPano(data.location.pano);
             panorama.setVisible(true);
             panorama.setOptions({ zoomControl: false, linksControl: true, addressControl: false, panControl: false })
@@ -213,6 +240,7 @@ export default function Gameplay() {
         if (!show) {
             return (<div style={{ visibility: "hidden", display: "none" }}><canvas id={styles["fillScorebar"]} height="10" width="70" ref={scorebarFillRef}></canvas></div>)
         }
+        console.log(goalPoint)
         return (
             <>
                 <SettingsModal />
@@ -227,6 +255,8 @@ export default function Gameplay() {
                             streetViewControl: false,
                         }}
                     >
+                        <MarkerF title="HELLO" position={goalPoint}>The place you were supposed to be!</MarkerF>
+                        <MarkerF position={userGuessPosition}>Guess position</MarkerF>
                     </GoogleMap>) : <></>}
                     <div id={styles["roundInformation"]}></div>
 
