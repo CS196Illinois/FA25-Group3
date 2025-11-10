@@ -3,9 +3,6 @@
 
 "use client"
 
-
-"use client"
-
 import styles from "./page.module.css";
 import Link from "next/link";
 import React, { useState, useEffect } from 'react';
@@ -25,11 +22,10 @@ export default function Profile() {
 
   return (
     <div className={styles['container-with-background']}>
-      <div>
-        <Link href= "/">
-          <img src="./logo.png" className={styles.logo} />
-        </Link>
-      </div>
+      
+      <Link href= "/">
+        <img className={styles.logo} src="./logo.png" />
+      </Link>
     
       <div className={styles.container}>
         
@@ -43,6 +39,10 @@ export default function Profile() {
           <h1>High Score: {}</h1>
           <h1>Total Points: {}</h1>
           <h1>Daily Streak: {}</h1>
+          <div className={styles['button-container']}>
+            <SignOut/>
+            <DeleteAccount/>
+          </div>
         </div>
         
       </div>
