@@ -1,6 +1,9 @@
 import "./globals.css";
 import SettingsModal from "../components/SettingsModal"
-// AudioProvider wraps the whole app so any page/component can access audio controls
+// AudioProvider wraps the whole app so any page/component can access audio controls.
+// How it works: it provides a React Context with helpers (startMusic, playEffect,
+// set volumes). Wrapping at the root ensures there is a single AudioContext and
+// that volume/mute state is shared across pages.
 import AudioProvider from "../components/AudioProvider";
 export const metadata = {
   title: "Play GeoUIUC!",

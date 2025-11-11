@@ -347,3 +347,4 @@ function fillGuessBar(bar) {
     bar.stroke()
 
 }
+

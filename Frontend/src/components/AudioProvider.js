@@ -1,9 +1,28 @@
 "use client";
-// AudioProvider: central place to control game audio in a simple way.
-// - Background music volume
-// - Effects volume (clicks/beeps)
-// - Starts/stops background music
-// - Plays tiny effects for gameplay events
+/*
+  AudioProvider
+  -----------------
+  What:
+    - A tiny global service (React Context) that lets any component control
+      background music and short sound effects.
+
+  How (high-level):
+    - Creates a single Web Audio "AudioContext" the first time the user
+      interacts with the page (browsers block autoplay before that).
+    - Builds a simple audio graph with two volume controls (Gain nodes):
+         [Music Source]  -> [music Gain]  -> speakers
+         [Effect Source] -> [effects Gain] -> speakers
+    - Exposes setters that update the Gain nodes in real-time, so the sliders
+      immediately change volume without restarting audio.
+    - Tries to play an MP3 file for background music via an <audio> element
+      connected into the Web Audio graph. If the file is missing, it falls
+      back to a soft synthetic tone so the system still works.
+    - Generates short percussive "beeps" for UI/game actions using an
+      Oscillator + a very short volume envelope.
+    - Chooses which track to play based on the current route using
+      next/navigation's usePathname (home/login/lobby/profile/game).
+
+*/
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation"; // know which page we're on
 
@@ -23,6 +42,7 @@ export function useAudio() {
 }
 
 export default function AudioProvider({ children }) {
+  // Persist volumes so they stick across refreshes. We store 0.0 - 1.0 range.
   const [musicVolume, setMusicVolumeState] = useState(() => {
     const v = typeof window !== "undefined" ? window.localStorage.getItem("musicVolume") : null;
     return v != null ? Number(v) : 0.5;
@@ -32,6 +52,8 @@ export default function AudioProvider({ children }) {
     return v != null ? Number(v) : 0.5;
   });
 
+  // Core Web Audio building blocks. We keep them in refs so we don't rebuild
+  // the graph every render.
   const audioCtxRef = useRef(null);
   const musicGainRef = useRef(null);
   const effectsGainRef = useRef(null);
@@ -61,6 +83,7 @@ export default function AudioProvider({ children }) {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         audioCtxRef.current = ctx;
+        // Two separate volume controls so music/effects are independent
         const musicGain = ctx.createGain();
         const effectsGain = ctx.createGain();
         musicGain.gain.value = musicVolume;
@@ -96,7 +119,13 @@ export default function AudioProvider({ children }) {
   }, []);
 
   const startMusic = useCallback(() => {
-    // Try to play your MP3 first; if that fails, use a soft synth tone
+    // Try to play your MP3 first; if that fails, use a soft synth tone.
+    // Under the hood:
+    //  - We create a single <audio> element (musicElRef)
+    //  - We wrap it with a MediaElementSource so its audio flows into the
+    //    Web Audio graph and through our music Gain node for volume control
+    //  - We keep the element's own volume at 1.0 and control loudness only
+    //    via the Gain node (for consistent behavior across browsers)
     ensureAudio();
     const ctx = audioCtxRef.current;
     if (!ctx) return;
@@ -201,12 +230,17 @@ export default function AudioProvider({ children }) {
     const ctx = audioCtxRef.current;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+    // Pick the base frequency for the tone; different events sound different
     let freq = 660;
     if (type === "submit") freq = 880;
     else if (type === "score") freq = 523.25;
     else if (type === "place") freq = 700;
     osc.type = "triangle";
     osc.frequency.value = freq;
+    // Simple percussive envelope:
+    //  - start at 0 (silent)
+    //  - quick linear attack up to the chosen effectsVolume
+    //  - fast exponential decay back to near 0 for a "click" feel
     gain.gain.setValueAtTime(0, ctx.currentTime);
     gain.gain.linearRampToValueAtTime(Math.max(0.001, effectsVolume), ctx.currentTime + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);

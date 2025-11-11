@@ -1,5 +1,21 @@
 // Settings Modal
 // No Route, works like a pop-up instead
+/*
+  What:
+    - A floating pop-up that opens from a gear button and lets the player
+      adjust Music/Effects volume and navigate home.
+
+  How:
+    - We track whether the modal is open with `open` (useState).
+    - Clicking the dark overlay calls setOpen(false) to close the modal.
+    - We pull `musicVolume`, `effectsVolume` and their setters from AudioProvider
+      so changes immediately update the global Gain nodes.
+    - On open we call `ensureAudio()` and `startMusic()` to initialize audio
+      after the user has interacted with the page.
+    - The sliders are standard range inputs; we write a gradient background so
+      the fill visually reflects the numeric value.
+    - The "Exit" label is renamed to "Home" and pushes "/" using next/router.
+*/
 "use client";
 import { useState, useEffect } from "react";
 import styles from "./SettingsModal.module.css"
