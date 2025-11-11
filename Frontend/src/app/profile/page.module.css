@@ -9,10 +9,10 @@ body {
     justify-content: space-around;
     align-items: center;
     background-color: rgba(25, 42, 98, .8);
-    padding: 30px;
-    border-radius: 50px;
+    padding: 2rem;
+    border-radius: 5rem;
     width: 70%;
-    height: 75%;
+    height: 75vh;
 }
 
 .profileContainer {
@@ -31,8 +31,10 @@ body {
 }
 
 .img {
-    width: 220px;
-    height: 220px;
+    width: 20vw; 
+    height: 20vw;
+    max-width: 220px;
+    max-height: 220px;
     border-radius: 100%;
 }
 
@@ -43,7 +45,7 @@ body {
     left: 0;
     display: flex;
     position: fixed;
-    padding: 5px
+    padding: 5px;
 }
 
 .container-with-background {

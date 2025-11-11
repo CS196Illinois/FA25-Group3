@@ -8,6 +8,7 @@ import Link from "next/link";
 import React, { useState, useEffect } from 'react';
 import SignOut from "@/components/SignoutButton";
 import DeleteAccount from "@/components/DeleteAccountButton";
+import SettingsModal from "@/components/SettingsModal";
 
 export default function Profile() {
   const [profilePic, setProfilePic] = useState();
@@ -45,6 +46,7 @@ export default function Profile() {
             <DeleteAccount/>
           </div>
         </div>
+        <SettingsModal />
         
       </div>
     </div>
