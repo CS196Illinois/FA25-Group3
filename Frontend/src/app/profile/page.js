@@ -39,6 +39,7 @@ export default function Profile() {
           <h1>High Score: {}</h1>
           <h1>Total Points: {}</h1>
           <h1>Daily Streak: {}</h1>
+          <br></br>
           <div className={styles['button-container']}>
             <SignOut/>
             <DeleteAccount/>
