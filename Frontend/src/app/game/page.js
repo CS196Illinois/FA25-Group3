@@ -7,6 +7,8 @@ import { GoogleMap, MarkerF, LoadScript, StreetViewPanorama, useJsApiLoader } fr
 import { getRandomPoint } from "./test-scripts/randpoint.js"
 import styles from "./page.module.css";
 import SettingsModal from '@/components/SettingsModal';
+// useAudio gives us simple helpers to play short sounds
+import { useAudio } from '@/components/AudioProvider';
 // import logo from "/logo.png";
 // import font from "https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap"
 let canvasMapWidth
@@ -34,6 +36,8 @@ const center = {
 }
 
 export default function Gameplay() {
+    // Pull in audio helpers
+    const { playEffect, startMusic, ensureAudio } = useAudio();
     const [showScoreScreen, setShowScoreScreen] = useState(false)
     const [score, setScore] = useState()
     const [guessInfo, setGuessInfo] = useState()
@@ -52,6 +56,12 @@ export default function Gameplay() {
         googleMapsApiKey: "AIzaSyAsEYGOKBJHsMyWQ4QvAqAmI_BQm7vxpAk",
         libraries: ['places']
     })
+    useEffect(() => {
+        // Initialize audio and attempt to start background music
+        ensureAudio();
+        startMusic();
+    }, [ensureAudio, startMusic]);
+
     useEffect(() => {
         timerInterval = setInterval(() => {
             setTimerSeconds(timerSeconds - 1)
@@ -138,6 +148,8 @@ export default function Gameplay() {
         )
     }, [isLoaded, userGuessPosition, affectCenter])
     function doThing(e) {
+        // Play a beep when the player places a guess on the small map
+        playEffect("place")
         // console.log(e)
         setUserGuessPosition({
             lat: e.latLng.lat(),
@@ -176,6 +188,8 @@ export default function Gameplay() {
         </div>
     )
     function submitGuess() {
+        // Play a beep when submitting a guess
+        playEffect("submit")
         setShowScoreScreen(true)
         //calculate score
         canvasMapWidth = window.innerWidth
@@ -206,6 +220,8 @@ export default function Gameplay() {
         */
     }
     function startRound() {
+        // Play a beep when starting the next round
+        playEffect("place")
         // // if (currentRound > maxRounds) {
         // //     finalScore()
         // //     return
@@ -237,6 +253,12 @@ export default function Gameplay() {
     }
 
     function ScoreScreen({ show }) {
+        // When the score screen becomes visible, play a short chime
+        useEffect(() => {
+            if (show) {
+                playEffect("score");
+            }
+        }, [show]);
         if (!show) {
             return (<div style={{ visibility: "hidden", display: "none" }}><canvas id={styles["fillScorebar"]} height="10" width="70" ref={scorebarFillRef}></canvas></div>)
         }
@@ -325,4 +347,3 @@ function fillGuessBar(bar) {
     bar.stroke()
 
 }
-
