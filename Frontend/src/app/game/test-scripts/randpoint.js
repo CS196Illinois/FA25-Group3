@@ -26,7 +26,7 @@ for (let i = 0; i < perimeter.length - 2; i += 2) {
 
 let boundingData = { topLongitude: -88.24238428986186, topLatitude: 40.11611769953682, bottomLongitude: -88.20952176360476, bottomLatitude: 40.08842958076448 }
 
-function getRandomPoint() {
+export function getRandomPoint() {
     let randomPoint
     let WARN = 0
     while (WARN < 1000) {
@@ -73,7 +73,7 @@ function getRandomPoint() {
 
 for (let i = 0; i < 100; i++) {
     let p = getRandomPoint()
-    console.log(p.lat.toString().substring(0, 6) + ", " + p.long.toString().substring(0, 7))
+    // console.log(p.lat.toString().substring(0, 6) + ", " + p.long.toString().substring(0, 7))
 }
 
 //when making the random point fit for consumption, please refer to https://xkcd.com/2170 :D

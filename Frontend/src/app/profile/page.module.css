@@ -1,0 +1,65 @@
+body {
+    background-color: #192A62;
+    font-size: large;
+    font-family: "Baloo 2";
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: rgba(25, 42, 98, .8);
+    padding: 30px;
+    border-radius: 50px;
+    width: 70%;
+    height: 75%;
+}
+
+.profileContainer {
+    text-align: center;
+    position: relative;
+    justify-content: center;
+    line-height: 2.5;
+}
+
+.profileContainer2 {
+    text-align: center;
+    position: relative;
+    justify-content: center;
+    line-height: 2.5;
+    text-shadow: -1.5px 0 #CD870E, 0 1.5px #CD870E, 1.5px 0 #CD870E, 0 -1.5px #CD870E;
+}
+
+.img {
+    width: 220px;
+    height: 220px;
+    border-radius: 100%;
+}
+
+.logo {
+    max-height: 60px;
+    float: left;
+    top: 0;
+    left: 0;
+    display: flex;
+    position: fixed;
+    padding: 5px
+}
+
+.container-with-background {
+    background-image: url('/foebackground.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: flex;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+.button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
