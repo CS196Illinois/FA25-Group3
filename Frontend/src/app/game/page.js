@@ -179,7 +179,7 @@ export default function Gameplay() {
     }
     const UIOverlay = useCallback(() => {
         return (<div id={styles["overlay"]}>
-            <Link href="./">
+            <Link href="\lobby">
                 <img src="./logo.png" style={{ maxHeight: "60px" }} />
             </Link>
             <div id={styles["timer"]}>{timerContents}</div>
