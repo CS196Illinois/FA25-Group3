@@ -24,7 +24,7 @@ export default function Profile() {
   return (
     <div className={styles['container-with-background']}>
       
-      <Link href= "/lobby">
+      <Link href= "/">
         <img className={styles.logo} src="./logo.png" />
       </Link>
     
