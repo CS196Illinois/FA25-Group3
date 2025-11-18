@@ -12,25 +12,41 @@
 
 .modalContent {
   background-color: #13294b;
-  padding: 2rem;
-  width: 450px;
+  padding: 1.5rem;
+  width: min(90vw, 450px);
   text-align: center;
   border-radius: 20px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
   font-family: "Inter", sans-serif;
+  box-sizing: border-box;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* align title to the left */
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto; /* push actions to the far right */
 }
 
 .modalContent h2 {
   filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.3));
   color: white;
-  font-size: 2rem;
+  font-size: 1.9rem;
   font-family: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
   font-weight: 800;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .sliderContainer {
-  margin: 1.5rem 0;
+  margin: 0.75rem 0;
   text-align: left;
 }
 
@@ -39,7 +55,7 @@
   font-weight: 700;
   color: white;
   font-family: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .sliderContainer input[type="range"] {
@@ -69,10 +85,11 @@
 }
 
 .buttons {
-  gap: 2rem;
-  display: flex;
-  justify-content: center;
-  margin-top: 2rem;
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  align-items: stretch;
 }
 
 .buttons button {
@@ -80,14 +97,57 @@
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
   color: white;
   border: none;
-  padding: 0.8rem 2rem;
+  padding: 0.6rem 1.25rem;
   border-radius: 12px;
-  font-size: 1.3rem;
+  font-size: 1.05rem;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.1s ease, background-color 0.2s ease;
-  width: 140px;
+  width: 100%;
   text-align: center;
+}
+
+.secondaryButton,
+.secondaryButtonDanger {
+  background-color: #ff7f00;
+  color: white;
+  border: none;
+  padding: 0.45rem 0.8rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
+}
+
+.secondaryButton:hover,
+.secondaryButtonDanger:hover {
+  transform: scale(1.04);
+}
+
+.secondaryButtonDanger {
+  background-color: #e84a27; /* Illinois Orange-Red */
+}
+.secondaryButtonDanger:hover {
+  background-color: #ff6a2a; /* brighter on hover */
+}
+
+@media (max-width: 520px) {
+  .modalContent {
+    width: 92vw;
+    padding: 1.25rem;
+  }
+  .modalHeader { align-items: flex-start; }
+  .headerActions {
+    gap: 0.4rem;
+  }
+  .buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .buttons button {
+    font-size: 0.95rem;
+    padding: 0.6rem 0.9rem;
+  }
 }
 
 .buttons button:hover {

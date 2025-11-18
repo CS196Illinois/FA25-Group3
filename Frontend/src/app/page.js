@@ -3,7 +3,6 @@
 "use client"
 
 import styles from "./page.module.css";
-import SettingsModal from "@/components/SettingsModal";
 import Button from "../components/Button";
 import Link from "next/link";
 import React from "react";
@@ -34,7 +33,7 @@ export default function Home() {
           <StartButton />
         </div>
       </div>
-      <SettingsModal />
+      {/* SettingsModal is now provided globally via RootLayout */}
     </div>
   );
 }
