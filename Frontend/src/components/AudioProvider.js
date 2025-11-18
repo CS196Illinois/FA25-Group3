@@ -26,19 +26,28 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation"; // know which page we're on
 
-const AudioCtx = createContext({
-  musicVolume: 0.5,
-  effectsVolume: 0.5,
-  setMusicVolume: () => {},
-  setEffectsVolume: () => {},
+// Two separate contexts: API (stable) and volumes (can change)
+const AudioApiCtx = createContext({
+  setMusicGainLive: () => {},
+  setEffectsGainLive: () => {},
   startMusic: () => {},
   stopMusic: () => {},
   playEffect: () => {},
   ensureAudio: () => {},
 });
+const AudioVolumesCtx = createContext({
+  musicVolume: 0.5,
+  effectsVolume: 0.5,
+  setMusicVolume: () => {},
+  setEffectsVolume: () => {},
+});
 
 export function useAudio() {
-  return useContext(AudioCtx);
+  // Back-compat: useAudio exposes only the stable API
+  return useContext(AudioApiCtx);
+}
+export function useAudioVolumes() {
+  return useContext(AudioVolumesCtx);
 }
 
 export default function AudioProvider({ children }) {
@@ -60,6 +69,14 @@ export default function AudioProvider({ children }) {
   const musicOscRef = useRef(null); // fallback synth if file isn't available
   const musicElRef = useRef(null);  // <audio> element for MP3 playback
   const musicSourceRef = useRef(null); // Web Audio node for <audio>
+  // Score counting loop (simple periodic blips)
+  const scoreAddTimerRef = useRef(null);
+  const scoreAddPitchRef = useRef(500);
+  // Keep latest volumes in refs so API callbacks don't depend on state
+  const musicVolRef = useRef(musicVolume);
+  const effectsVolRef = useRef(effectsVolume);
+  useEffect(() => { musicVolRef.current = musicVolume; }, [musicVolume]);
+  useEffect(() => { effectsVolRef.current = effectsVolume; }, [effectsVolume]);
   // Default/fallback track (e.g., in-game)
   // Put this file at Frontend/public/audio/bgm.mp3
   const MUSIC_URL = "/audio/bgm.mp3";
@@ -86,8 +103,9 @@ export default function AudioProvider({ children }) {
         // Two separate volume controls so music/effects are independent
         const musicGain = ctx.createGain();
         const effectsGain = ctx.createGain();
-        musicGain.gain.value = musicVolume;
-        effectsGain.gain.value = effectsVolume;
+        // Initialize from refs (not captured state)
+        musicGain.gain.value = musicVolRef.current ?? 0.5;
+        effectsGain.gain.value = effectsVolRef.current ?? 0.5;
         musicGain.connect(ctx.destination);
         effectsGain.connect(ctx.destination);
         musicGainRef.current = musicGain;
@@ -98,7 +116,7 @@ export default function AudioProvider({ children }) {
     } else if (audioCtxRef.current.state === "suspended") {
       audioCtxRef.current.resume().catch(() => {});
     }
-  }, [musicVolume, effectsVolume]);
+  }, []);
 
   // (moved below startMusic to avoid TDZ for startMusic)
 
@@ -115,6 +133,17 @@ export default function AudioProvider({ children }) {
     const vol = Math.max(0, Math.min(1, v));
     setEffectsVolumeState(vol);
     if (typeof window !== "undefined") window.localStorage.setItem("effectsVolume", String(vol));
+    if (effectsGainRef.current) effectsGainRef.current.gain.value = vol;
+  }, []);
+
+  // Live-only: update Gain nodes without updating React state or context value.
+  // Useful for dragging sliders without causing app-wide re-renders.
+  const setMusicGainLive = useCallback((v) => {
+    const vol = Math.max(0, Math.min(1, v));
+    if (musicGainRef.current) musicGainRef.current.gain.value = vol;
+  }, []);
+  const setEffectsGainLive = useCallback((v) => {
+    const vol = Math.max(0, Math.min(1, v));
     if (effectsGainRef.current) effectsGainRef.current.gain.value = vol;
   }, []);
 
@@ -160,7 +189,8 @@ export default function AudioProvider({ children }) {
     if (musicOscRef.current) return; // already running
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    gain.gain.value = musicVolume * 0.15; // keep background subtle
+    // Use latest volume via ref (avoid state dep)
+    gain.gain.value = (musicVolRef.current ?? 0.5) * 0.15; // keep background subtle
     osc.type = "sine";
     osc.frequency.setValueAtTime(220, ctx.currentTime);
     const lfo = ctx.createOscillator();
@@ -174,7 +204,7 @@ export default function AudioProvider({ children }) {
     osc.start();
     lfo.start();
     musicOscRef.current = { osc, lfo, gain };
-  }, [ensureAudio, musicVolume]);
+  }, [ensureAudio]);
 
   const stopMusic = useCallback(() => {
     // Stop MP3 if it is playing
@@ -188,6 +218,41 @@ export default function AudioProvider({ children }) {
         musicOscRef.current.lfo.stop();
       } catch {}
       musicOscRef.current = null;
+    }
+  }, []);
+
+  // Start/stop a short repeating "counting" sound while the score bar fills
+  const startScoreAdd = useCallback(() => {
+    ensureAudio();
+    if (!audioCtxRef.current) return;
+    if (scoreAddTimerRef.current) return; // already running
+    scoreAddPitchRef.current = 480;
+    scoreAddTimerRef.current = setInterval(() => {
+      try {
+        const ctx = audioCtxRef.current;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        // Gently rising pitch gives a sense of progress
+        const base = Math.min(900, (scoreAddPitchRef.current += 6));
+        osc.type = "square";
+        osc.frequency.value = base;
+        // Very short envelope
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        const peak = Math.max(0.001, effectsGainRef.current?.gain?.value ?? 0.5) * 0.35;
+        gain.gain.linearRampToValueAtTime(peak, ctx.currentTime + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(effectsGainRef.current || ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.09);
+      } catch {}
+    }, 90); // ~11 blips/sec
+  }, [ensureAudio]);
+
+  const stopScoreAdd = useCallback(() => {
+    if (scoreAddTimerRef.current) {
+      clearInterval(scoreAddTimerRef.current);
+      scoreAddTimerRef.current = null;
     }
   }, []);
 
@@ -235,6 +300,7 @@ export default function AudioProvider({ children }) {
     if (type === "submit") freq = 880;
     else if (type === "score") freq = 523.25;
     else if (type === "place") freq = 700;
+    else if (type === "tick") freq = 440; // softer ticking tone for countdown
     osc.type = "triangle";
     osc.frequency.value = freq;
     // Simple percussive envelope:
@@ -242,27 +308,39 @@ export default function AudioProvider({ children }) {
     //  - quick linear attack up to the chosen effectsVolume
     //  - fast exponential decay back to near 0 for a "click" feel
     gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(Math.max(0.001, effectsVolume), ctx.currentTime + 0.01);
+    // Use current effects volume from gain/ref, avoid state dep
+    const currentFxVol = Math.max(0.001, effectsGainRef.current?.gain?.value ?? effectsVolRef.current ?? 0.5);
+    gain.gain.linearRampToValueAtTime(currentFxVol, ctx.currentTime + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);
     osc.connect(gain);
     gain.connect(effectsGainRef.current || ctx.destination);
     osc.start();
     osc.stop(ctx.currentTime + 0.2);
-  }, [effectsVolume, ensureAudio]);
+  }, [ensureAudio]);
 
-  const value = useMemo(
+  // Stable API context (does not change when volumes change)
+  const apiValue = useMemo(
     () => ({
-      musicVolume,
-      effectsVolume,
-      setMusicVolume,
-      setEffectsVolume,
+      setMusicGainLive,
+      setEffectsGainLive,
       startMusic,
       stopMusic,
       playEffect,
       ensureAudio,
+      startScoreAdd,
+      stopScoreAdd,
     }),
-    [musicVolume, effectsVolume, setMusicVolume, setEffectsVolume, startMusic, stopMusic, playEffect, ensureAudio]
+    [setMusicGainLive, setEffectsGainLive, startMusic, stopMusic, playEffect, ensureAudio, startScoreAdd, stopScoreAdd]
+  );
+  // Volumes context (changes when volumes change)
+  const volumesValue = useMemo(
+    () => ({ musicVolume, effectsVolume, setMusicVolume, setEffectsVolume }),
+    [musicVolume, effectsVolume, setMusicVolume, setEffectsVolume]
   );
 
-  return <AudioCtx.Provider value={value}>{children}</AudioCtx.Provider>;
+  return (
+    <AudioApiCtx.Provider value={apiValue}>
+      <AudioVolumesCtx.Provider value={volumesValue}>{children}</AudioVolumesCtx.Provider>
+    </AudioApiCtx.Provider>
+  );
 }

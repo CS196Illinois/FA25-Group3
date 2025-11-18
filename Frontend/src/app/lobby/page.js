@@ -3,6 +3,8 @@
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
 import signInWithGoogle  from "@/components/firebase-config";
+import { auth } from "@/components/firebase-config";
+import { onAuthStateChanged } from "firebase/auth";
 import { useState, useRef, useEffect } from "react";
 
 function StartButton() {
@@ -42,6 +44,16 @@ export default function Lobby() {
   const videoARef = useRef(null);
   const videoBRef = useRef(null);
   const [name, setName] = useState("");
+
+  useEffect(() => {
+    // Auth guard: if not signed in, redirect back to /login
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        try { router.replace("/login"); } catch {}
+      }
+    });
+    return () => unsub();
+  }, [router]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {

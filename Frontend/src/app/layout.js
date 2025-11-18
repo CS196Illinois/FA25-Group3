@@ -5,6 +5,7 @@ import SettingsModal from "../components/SettingsModal"
 // set volumes). Wrapping at the root ensures there is a single AudioContext and
 // that volume/mute state is shared across pages.
 import AudioProvider from "../components/AudioProvider";
+import GlobalButtonSfx from "../components/GlobalButtonSfx";
 export const metadata = {
   title: "Play GeoUIUC!",
   description: "CS124H - FA25 Group 3's Project",
@@ -22,7 +23,10 @@ export default function RootLayout({ children }) {
         {/* Wrap the entire app with AudioProvider so Settings and Game can control sound */}
         <AudioProvider>
           <main>{children}</main>
-          {/* SettingsModal could also live here globally if desired */}
+          {/* Global UI helpers */}
+          <GlobalButtonSfx />
+          {/* Global settings button/modal on all pages */}
+          <SettingsModal />
         </AudioProvider>
       </body>
     </html>
