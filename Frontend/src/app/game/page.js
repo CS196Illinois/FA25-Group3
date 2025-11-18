@@ -17,7 +17,8 @@ import { GoogleMap, MarkerF, LoadScript, StreetViewPanorama, PolylineF, useJsApi
 
 import { getRandomPoint } from "./test-scripts/randpoint.js"
 import styles from "./page.module.css";
-import SettingsModal from '@/components/SettingsModal';
+// useAudio gives us simple helpers to play short sounds
+import { useAudio } from '@/components/AudioProvider';
 // import logo from "/logo.png";
 // import font from "https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap"
 let canvasMapWidth
@@ -45,6 +46,8 @@ const center = {
 }
 
 export default function Gameplay() {
+    // Pull in audio helpers
+    const { playEffect, startMusic, ensureAudio, startScoreAdd, stopScoreAdd } = useAudio();
     const [showScoreScreen, setShowScoreScreen] = useState(false)
     const [score, setScore] = useState()
     const [guessInfo, setGuessInfo] = useState()
@@ -67,6 +70,15 @@ export default function Gameplay() {
         googleMapsApiKey: "AIzaSyAsEYGOKBJHsMyWQ4QvAqAmI_BQm7vxpAk",
         libraries: ['places']
     })
+    useEffect(() => {
+        // Initialize audio and attempt to start background music
+        ensureAudio();
+        startMusic();
+    }, [ensureAudio, startMusic]);
+    // Keep a stable ref to playEffect so using it doesn't affect effects' deps
+    const playEffectRef = useRef(playEffect)
+    useEffect(() => { playEffectRef.current = playEffect }, [playEffect])
+
     useEffect(() => {
         timerInterval = setInterval(() => {
             setTimerSeconds(timerSeconds - 1)
@@ -121,6 +133,20 @@ export default function Gameplay() {
         }
 
     }, [isLoaded])
+    // Play a soft tick each second during the last 10 seconds
+    useEffect(() => {
+        if (showScoreScreen) return; // no ticking once guess submitted
+        if (timerSeconds > 0 && timerSeconds <= 10) {
+            playEffectRef.current?.("tick")
+        }
+    }, [timerSeconds, showScoreScreen])
+    // One-time warning tick at 30 seconds remaining
+    useEffect(() => {
+        if (showScoreScreen) return;
+        if (timerSeconds === 30) {
+            playEffectRef.current?.("tick")
+        }
+    }, [timerSeconds, showScoreScreen])
     const GuessOverlay = useCallback(() => {
         function handleZoomChanged() {
             setMapZoom(this.getZoom())
@@ -164,6 +190,9 @@ export default function Gameplay() {
             lat: e.latLng.lat(),
             lng: e.latLng.lng()
         })
+        // Play a beep when the player places a guess on the small map
+        playEffect("place")
+        // console.log(e)
         setUserGuessPosition({
             lat: e.latLng.lat(),
             lng: e.latLng.lng()
@@ -185,7 +214,7 @@ export default function Gameplay() {
     }
     const UIOverlay = useCallback(() => {
         return (<div id={styles["overlay"]}>
-            <Link href="./">
+            <Link href="\lobby">
                 <img src="./logo.png" style={{ maxHeight: "60px" }} />
             </Link>
             <div id={styles["timer"]}>{timerContents}</div>
@@ -203,13 +232,14 @@ export default function Gameplay() {
             <UIOverlay></UIOverlay>
             <ControlOverlay></ControlOverlay>
             <ScoreScreen show={showScoreScreen}></ScoreScreen>
-            <SettingsModal />
             <GuessOverlay></GuessOverlay>
             <script src="project-scripts/test.js"></script>
 
         </div>
     )
     function submitGuess() {
+        // Play a beep when submitting a guess
+        playEffect("submit")
         setShowScoreScreen(true)
         //calculate score
         canvasMapWidth = window.innerWidth
@@ -229,7 +259,9 @@ export default function Gameplay() {
         //score screen has: 
         fillTicks = 0
         fillTicksAcc = 0
-        barInterval = setInterval(fillGuessBar, 1, scorebarFillRef)
+        // Start score counting sfx and animate score bar
+        startScoreAdd()
+        barInterval = setInterval(fillGuessBar, 1, scorebarFillRef, stopScoreAdd)
         setScore(effectiveScore + "pts")
         setGuessInfo("You didn't guess!")
         if (hasGuessed) {
@@ -244,6 +276,8 @@ export default function Gameplay() {
         */
     }
     function startRound() {
+        // Play a beep when starting the next round
+        playEffect("place")
         // // if (currentRound > maxRounds) {
         // //     finalScore()
         // //     return
@@ -276,13 +310,18 @@ export default function Gameplay() {
     }
 
     function ScoreScreen({ show }) {
+        // When the score screen becomes visible, play a short chime
+        useEffect(() => {
+            if (show) {
+                playEffect("score");
+            }
+        }, [show]);
         if (!show) {
             return (<div style={{ visibility: "hidden", display: "none" }}><canvas id={styles["fillScorebar"]} height="10" width="70" ref={scorebarFillRef}></canvas></div>)
         }
         console.log(goalPoint)
         return (
             <>
-                <SettingsModal />
                 <div id={styles.scoreScreen}>
 
                     <img src="./logo.png" style={{ maxHeight: "60px", marginRight: "calc(100% - 70px)" }} />
@@ -353,10 +392,11 @@ export default function Gameplay() {
 function pano() {
 
 }
-function fillGuessBar(bar) {
+function fillGuessBar(bar, stopScoreAddFn) {
     canvasMapWidth = window.innerWidth
     bar = bar.current.getContext("2d")
     if (fillTicks > ((((.8 * canvasMapWidth) / 3) * (effectiveScore / 5000)) - 30)) {
+        try { if (typeof stopScoreAddFn === 'function') stopScoreAddFn() } catch {}
         clearInterval(barInterval)
     }
     fillTicks += 1 + fillTicksAcc
@@ -382,4 +422,3 @@ function fillGuessBar(bar) {
     bar.stroke()
 
 }
-
