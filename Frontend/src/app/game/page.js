@@ -323,8 +323,9 @@ export default function Gameplay() {
         return (
             <>
                 <div id={styles.scoreScreen}>
-
-                    <img src="./logo.png" style={{ maxHeight: "60px", marginRight: "calc(100% - 70px)" }} />
+                    <Link href="\lobby">
+                        <img src="./logo.png" style={{ maxHeight: "60px", marginRight: "calc(100% - 70px)" }} />
+                    </Link>
                     {isLoaded ? (<GoogleMap
                         mapContainerStyle={{ width: '75vw', height: '400px', marginLeft: "12.5vw", marginBottom: "10px" }}
                         center={{ lat: (goalPoint.lat + userGuessPosition.lat) / 2, lng: (goalPoint.lng + userGuessPosition.lng) / 2 }}
