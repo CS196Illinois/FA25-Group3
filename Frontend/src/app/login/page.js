@@ -27,14 +27,14 @@ export default function Login() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         // User is signed in.
-        // Get a reference to the user's document in the 'users' collection, using their UID as the document ID.
         const userRef = doc(db, "users", user.uid);
 
         // Define the template data for a new or existing user document.
-        // Fields here will be either set (if document is new) or merged (if document exists).
         const templateUserData = {
-          email: user.email,        // Essential Auth data, directly from the user object
+          // Essential Auth data, directly from the user object
+          email: user.email,
           displayName: user.displayName,
+          // profilePicture is already here, pulling from user.photoURL
           profilePicture: user.photoURL,
 
           // Application-specific fields with default "blank" values
@@ -42,41 +42,32 @@ export default function Login() {
           totalPoints: 0,
           dailyStreak: 0,
 
+          // New fields as requested:
+          bio: "", // Initialize bio as an empty string
+          recentScores: [0, 0, 0, 0, 0], // Array of 5 individual ints initialized to 0
+          userID: user.uid, // Store the user's UID explicitly
+
           // Timestamps for metadata:
-          // createdAt from Auth metadata, converted to Date object if available.
           createdAt: user.metadata.creationTime ? new Date(user.metadata.creationTime) : null,
-          // lastSignInTime from Auth metadata, converted to Date object if available.
-          lastSignInTime: user.metadata.lastSignInTime ? new Date(user.metadata.lastSignInTime) : null,
-          // lastActivity uses Firestore's serverTimestamp for an accurate, server-generated timestamp.
-          lastActivity: serverTimestamp(),
         };
 
         try {
-          // Use setDoc with { merge: true } to create the document if it doesn't exist,
-          // or add/update only the specified fields if it does. This prevents overwriting existing data.
           await setDoc(userRef, templateUserData, { merge: true });
           console.log("User document created/updated (template applied) successfully for UID:", user.uid);
 
-          // After successfully creating/updating the document, redirect the user.
-          // This check prevents redirecting if they're already on /lobby (e.g., from a refresh).
           if (router.pathname === '/') {
             router.push("/lobby");
           }
         } catch (error) {
           console.error("Error applying template user document to Firestore:", error);
-          // You might want to display an error message to the user here.
         }
       } else {
-        // User is signed out.
         console.log("No user is signed in.");
-        // If a user logs out, you might choose to redirect them to the login page here.
-        // For example: if (router.pathname !== '/') router.push('/');
       }
     });
 
-    // Clean up the listener when the component unmounts to prevent memory leaks.
     return () => unsubscribe();
-  }, [router]); // The effect depends on the 'router' object.
+  }, [router]);
   
   const router = useRouter();
   const handleLoginSuccess = () => {
