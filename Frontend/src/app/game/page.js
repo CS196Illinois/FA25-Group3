@@ -580,6 +580,7 @@ export default function Gameplay() {
     const [isMapExpanded, setIsMapExpanded] = useState(false)
     const panoramaRef = useRef(null)
     const scoreAddStartedRef = useRef(false)
+    const hasMarkerPlacedRef = useRef(false)
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
@@ -619,6 +620,7 @@ export default function Gameplay() {
     const handleMapClick = useCallback((position) => {
         playEffect("place")
         gameLogic.setUserGuess(position)
+        hasMarkerPlacedRef.current = true
     }, [gameLogic, playEffect])
 
     const handleScoreBarComplete = useCallback(() => {
@@ -637,17 +639,30 @@ export default function Gameplay() {
         setShowScoreScreen(false)
         resetTimer(INITIAL_TIMER_SECONDS)
         findValidPanorama(newGoalPoint)
+        hasMarkerPlacedRef.current = false
     }, [currentRound, gameLogic, resetTimer, findValidPanorama, playEffect, stopScoreAudio])
 
     useEffect(() => {
         if (showScoreScreen && gameLogic.score) {
             stopScoreAdd()
-            scoreAddStartedRef.current = true
-            startScoreAdd()
+            scoreAddStartedRef.current = false
+            if (hasMarkerPlacedRef.current) {
+                const timer = setTimeout(() => {
+                    if (showScoreScreen && gameLogic.score && hasMarkerPlacedRef.current) {
+                        scoreAddStartedRef.current = true
+                        startScoreAdd()
+                    }
+                }, 50)
+                return () => {
+                    clearTimeout(timer)
+                    stopScoreAdd()
+                }
+            }
         } else if (!showScoreScreen) {
             stopScoreAudio()
+            scoreAddStartedRef.current = false
         }
-    }, [showScoreScreen, gameLogic.score, startScoreAdd, stopScoreAdd, stopScoreAudio])
+    }, [showScoreScreen, gameLogic.score, currentRound, startScoreAdd, stopScoreAdd, stopScoreAudio])
 
     useEffect(() => {
         if (showScoreScreen) return
