@@ -33,7 +33,7 @@ export default function Home() {
           <StartButton />
         </div>
       </div>
-      <SettingsModal />
+      {/* SettingsModal is now provided globally via RootLayout */}
     </div>
   );
 }

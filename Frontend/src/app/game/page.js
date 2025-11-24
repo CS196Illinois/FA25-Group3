@@ -1,10 +1,10 @@
 "use client"
 import { useRef, useState, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
-import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api"
+import { GoogleMap, MarkerF, PolylineF, useJsApiLoader } from "@react-google-maps/api"
 import { getRandomPoint } from "./test-scripts/randpoint.js"
 import styles from "./page.module.css"
-import SettingsModal from '@/components/SettingsModal'
+import { useAudio } from '@/components/AudioProvider'
 
 const CAMPUS_MAP_BOUNDS = {
     north: 40.2,
@@ -38,6 +38,8 @@ const SCORE_BAR_COLORS = {
 }
 
 const DEFAULT_POSITION = { lat: 0, lng: 0 }
+const TIMER_WARNING_SECONDS = 30
+const TIMER_TICK_SECONDS = 10
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371
@@ -148,7 +150,7 @@ function useStreetViewPanorama(isLoaded, panoramaRef) {
                     panorama.setPano(data.location.pano)
                     panorama.setVisible(true)
                     panorama.setOptions({
-                        zoomControl: false,
+                        zoomControl: true,
                         linksControl: true,
                         addressControl: false,
                         panControl: false,
@@ -157,13 +159,25 @@ function useStreetViewPanorama(isLoaded, panoramaRef) {
                 } catch (error) {
                     console.error("Error setting panorama:", error)
                 }
-            } else {
-                console.warn("Panorama not initialized or setPano not available")
             }
         }
 
         service.getPanorama({ location: initialPoint, radius: 1000 }).then(processPanorama)
-    }, [panoramaRef, ensurePanoramaInitialized, panoramaInstanceRef])
+    }, [panoramaRef, ensurePanoramaInitialized])
+
+    const zoomIn = useCallback(() => {
+        const panorama = panoramaInstanceRef.current
+        if (panorama && typeof panorama.getZoom === 'function') {
+            panorama.setZoom(panorama.getZoom() + 1)
+        }
+    }, [])
+
+    const zoomOut = useCallback(() => {
+        const panorama = panoramaInstanceRef.current
+        if (panorama && typeof panorama.getZoom === 'function') {
+            panorama.setZoom(panorama.getZoom() - 1)
+        }
+    }, [])
     
     useEffect(() => {
         if (!isLoaded || !window.google) return
@@ -175,7 +189,7 @@ function useStreetViewPanorama(isLoaded, panoramaRef) {
         findValidPanorama(point)
     }, [isLoaded, ensurePanoramaInitialized, findValidPanorama])
 
-    return { goalPoint, findValidPanorama }
+    return { goalPoint, findValidPanorama, zoomIn, zoomOut }
 }
 
 function useTimer(initialSeconds, onTimeout) {
@@ -203,10 +217,10 @@ function useTimer(initialSeconds, onTimeout) {
         setSeconds(newSeconds)
     }, [initialSeconds])
 
-    return { reset, formatted: formatTimer(seconds) }
+    return { seconds, reset, formatted: formatTimer(seconds) }
 }
 
-function useScoreBarAnimation(show, score) {
+function useScoreBarAnimation(show, score, onComplete) {
     const canvasRef = useRef(null)
     const [effectiveScore, setEffectiveScore] = useState(0)
 
@@ -232,7 +246,10 @@ function useScoreBarAnimation(show, score) {
                           (effectiveScore / MAX_SCORE) - OFFSET
 
         const drawFrame = () => {
-            if (fillTicks > targetTicks) return false
+            if (fillTicks > targetTicks) {
+                if (onComplete) onComplete()
+                return false
+            }
 
             fillTicks += 1 + fillTicksAcc
             fillTicksAcc += SCORE_BAR_CONFIG.ACCELERATION
@@ -270,7 +287,7 @@ function useScoreBarAnimation(show, score) {
         }, 1)
 
         return () => clearInterval(interval)
-    }, [show, effectiveScore])
+    }, [show, effectiveScore, onComplete])
 
     return canvasRef
 }
@@ -327,7 +344,7 @@ function useGameLogic(goalPoint) {
 function UIOverlay({ timerText, currentRound }) {
     return (
         <div id={styles["overlay"]}>
-            <Link href="./">
+            <Link href="/lobby">
                 <img src="./logo.png" style={{ maxHeight: "60px" }} alt="Logo" />
             </Link>
             <div id={styles["timer"]}>{timerText}</div>
@@ -336,11 +353,11 @@ function UIOverlay({ timerText, currentRound }) {
     )
 }
 
-function ControlOverlay() {
+function ControlOverlay({ onZoomIn, onZoomOut }) {
     return (
         <div id={styles.controlsOverlay}>
-            <button id={styles["zoomIn"]}>+</button>
-            <button id={styles["zoomOut"]}>-</button>
+            <button id={styles["zoomIn"]} onClick={onZoomIn}>+</button>
+            <button id={styles["zoomOut"]} onClick={onZoomOut}>-</button>
         </div>
     )
 }
@@ -371,7 +388,7 @@ function useMapMarker(mapInstanceRef) {
         }
     }, [mapInstanceRef])
 
-    return { markerInstanceRef, updateMarker }
+    return { updateMarker }
 }
 
 function GuessMap({ 
@@ -388,6 +405,7 @@ function GuessMap({
     const mapContainerStyle = useMemo(() => ({
         width: isExpanded ? '600px' : '400px',
         height: isExpanded ? '600px' : '400px',
+        marginLeft: "200px",
         marginBottom: "15px",
         transition: 'width 0.3s ease, height 0.3s ease'
     }), [isExpanded])
@@ -440,10 +458,13 @@ function GuessMap({
                     streetViewControl: false,
                     disableDoubleClickZoom: true
                 }}
-            />
-            <button onClick={onSubmitGuess}>Submit guess!</button>
-        </div>
-    )
+                >
+                </GoogleMap>
+            <button style={{ width: "400px", marginLeft: "200px" }} onClick={onSubmitGuess}>
+                Submit guess!
+            </button>
+            </div>
+        )
 }
 
 function ScoreScreen({ 
@@ -453,10 +474,17 @@ function ScoreScreen({
     goalPoint, 
     guessPoint, 
     isLoaded, 
-    onNextRound 
+    onNextRound,
+    onScoreBarComplete
 }) {
-    const scorebarRef = useScoreBarAnimation(show, score)
+    const scorebarRef = useScoreBarAnimation(show, score, onScoreBarComplete)
     
+    useEffect(() => {
+        if (show) {
+            // Score screen sound effect will be handled by parent component
+        }
+    }, [show])
+
     if (!show) {
         return (
             <div style={{ visibility: "hidden", display: "none" }}>
@@ -478,56 +506,64 @@ function ScoreScreen({
     const mapZoom = getMapZoom(distance)
         
         return (
-            <>
-                <SettingsModal />
                 <div id={styles.scoreScreen}>
-                <img 
-                    src="./logo.png" 
-                    style={{ maxHeight: "60px", marginRight: "calc(100% - 70px)" }} 
-                    alt="Logo" 
-                />
-                {isLoaded && goalPoint && (
-                    <GoogleMap
-                        mapContainerStyle={{ 
-                            width: '75vw', 
-                            height: '400px', 
-                            marginLeft: "12.5vw", 
-                            marginBottom: "10px" 
-                        }}
+            <img 
+                src="./logo.png" 
+                style={{ maxHeight: "60px", marginRight: "calc(100% - 70px)" }} 
+                alt="Logo" 
+            />
+            {isLoaded && goalPoint && (
+                <GoogleMap
+                    mapContainerStyle={{ 
+                        width: '75vw', 
+                        height: '400px', 
+                        marginLeft: "12.5vw", 
+                        marginBottom: "10px" 
+                    }}
                         center={mapCenter}
                         zoom={mapZoom}
-                        options={{ streetViewControl: false }}
+                    options={{ streetViewControl: false }}
                     >
                         <MarkerF 
-                            position={goalPoint}
+                        position={goalPoint}
                             title="Correct Location"
-                            icon={{ url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" }}
+                        icon={{ url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" }}
                         />
-                        {guessPoint && !isDefaultPosition(guessPoint) && (
+                    {guessPoint && !isDefaultPosition(guessPoint) && (
+                        <>
                             <MarkerF 
                                 position={guessPoint}
                                 title="Your Guess"
                                 icon={{ url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png" }}
                             />
-                        )}
-                    </GoogleMap>
-                )}
+                            <PolylineF
+                                path={[goalPoint, guessPoint]}
+                                geodesic={true}
+                                options={{
+                                    strokeColor: "#ff2527",
+                                    strokeOpacity: 0.75,
+                                    strokeWeight: 2
+                                }}
+                            />
+                        </>
+                    )}
+                </GoogleMap>
+            )}
                     <div id={styles["roundInformation"]}></div>
                     <div id={styles["scoreBar"]}>
                         <div id={styles["score"]}>{score}</div>
-                    <canvas 
-                        id={styles["fillScorebar"]} 
-                        height="70" 
-                        width={window.innerWidth} 
-                        ref={scorebarRef}
-                    />
+                <canvas 
+                    id={styles["fillScorebar"]} 
+                    height="70" 
+                    width={window.innerWidth} 
+                    ref={scorebarRef}
+                />
                         <div id={styles["guessInfo"]}>{guessInfo}</div>
-                    <button onClick={onNextRound}>Start next!</button>
-                    </div>
+                <button onClick={onNextRound}>Start next!</button>
                 </div>
-            </>
-        )
-    }
+        </div>
+    )
+}
 
 export default function Gameplay() {
     const [showScoreScreen, setShowScoreScreen] = useState(false)
@@ -541,23 +577,41 @@ export default function Gameplay() {
         libraries: GOOGLE_MAPS_LIBRARIES
     })
 
-    const { goalPoint, findValidPanorama } = useStreetViewPanorama(isLoaded, panoramaRef)
-    const gameLogic = useGameLogic(goalPoint)
+    const { playEffect, startMusic, ensureAudio, startScoreAdd, stopScoreAdd } = useAudio()
 
-    const submitGuess = useCallback(() => {
+    useEffect(() => {
+        ensureAudio()
+        startMusic()
+    }, [ensureAudio, startMusic])
+
+    const { goalPoint, findValidPanorama, zoomIn, zoomOut } = useStreetViewPanorama(isLoaded, panoramaRef)
+    const gameLogic = useGameLogic(goalPoint)
+    const { seconds: timerSeconds, reset: resetTimer, formatted: timerText } = useTimer(
+        INITIAL_TIMER_SECONDS, 
+        () => handleSubmitGuess()
+    )
+
+    const handleSubmitGuess = useCallback(() => {
+        playEffect("submit")
         gameLogic.submitGuess()
         setShowScoreScreen(true)
         setCurrentRound(prev => prev + 1)
-    }, [gameLogic])
+        startScoreAdd()
+    }, [gameLogic, playEffect, startScoreAdd])
 
-    const { reset: resetTimer, formatted: timerText } = useTimer(
-        INITIAL_TIMER_SECONDS, 
-        submitGuess
-    )
+    const handleMapClick = useCallback((position) => {
+        playEffect("place")
+        gameLogic.setUserGuess(position)
+    }, [gameLogic, playEffect])
+
+    const handleScoreBarComplete = useCallback(() => {
+        stopScoreAdd()
+    }, [stopScoreAdd])
 
     const startRound = useCallback(() => {
         if (currentRound > MAX_ROUNDS) return
 
+        playEffect("place")
         const randomPoint = getRandomPoint()
         const newGoalPoint = createPosition(randomPoint.lat, randomPoint.long)
         
@@ -565,7 +619,27 @@ export default function Gameplay() {
         setShowScoreScreen(false)
         resetTimer(INITIAL_TIMER_SECONDS)
         findValidPanorama(newGoalPoint)
-    }, [currentRound, gameLogic, resetTimer, findValidPanorama])
+    }, [currentRound, gameLogic, resetTimer, findValidPanorama, playEffect])
+
+    useEffect(() => {
+        if (showScoreScreen) {
+            playEffect("score")
+        }
+    }, [showScoreScreen, playEffect])
+
+    useEffect(() => {
+        if (showScoreScreen) return
+        if (timerSeconds > 0 && timerSeconds <= TIMER_TICK_SECONDS) {
+            playEffect("tick")
+        }
+    }, [timerSeconds, showScoreScreen, playEffect])
+
+    useEffect(() => {
+        if (showScoreScreen) return
+        if (timerSeconds === TIMER_WARNING_SECONDS) {
+            playEffect("tick")
+        }
+    }, [timerSeconds, showScoreScreen, playEffect])
 
     return (
         <div className={styles.umbrella} style={styles}>
@@ -575,15 +649,15 @@ export default function Gameplay() {
                 style={{ width: "100vw", height: "100vh" }}
             />
             <UIOverlay timerText={timerText} currentRound={currentRound} />
-            <ControlOverlay />
+            <ControlOverlay onZoomIn={zoomIn} onZoomOut={zoomOut} />
             {!showScoreScreen && (
                 <GuessMap
                     isLoaded={isLoaded}
                     userGuess={gameLogic.userGuess}
-                    onMapClick={gameLogic.setUserGuess}
+                    onMapClick={handleMapClick}
                     isExpanded={isMapExpanded}
                     onToggleExpand={() => setIsMapExpanded(prev => !prev)}
-                    onSubmitGuess={submitGuess}
+                    onSubmitGuess={handleSubmitGuess}
                 />
             )}
             <ScoreScreen
@@ -594,6 +668,7 @@ export default function Gameplay() {
                 guessPoint={gameLogic.submittedGuess}
                 isLoaded={isLoaded}
                 onNextRound={startRound}
+                onScoreBarComplete={handleScoreBarComplete}
             />
         </div>
     )
