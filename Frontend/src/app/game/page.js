@@ -1,6 +1,7 @@
 "use client"
 import { useRef, useState, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { GoogleMap, MarkerF, PolylineF, useJsApiLoader } from "@react-google-maps/api"
 import { getRandomPoint } from "./test-scripts/randpoint.js"
 import styles from "./page.module.css"
@@ -46,7 +47,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     const dLat = (lat2 - lat1) * Math.PI / 180
     const dLon = (lon2 - lon1) * Math.PI / 180
     const a = Math.sin(dLat / 2) ** 2 + 
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
               Math.sin(dLon / 2) ** 2
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
@@ -104,7 +105,6 @@ function useStreetViewPanorama(isLoaded, panoramaRef) {
 
     const ensurePanoramaInitialized = useCallback(() => {
         if (panoramaInstanceRef.current) return true
-        
         if (!window.google?.maps) return false
         
         const container = panoramaRef.current || document.querySelector('[data-panorama-container]')
@@ -123,7 +123,6 @@ function useStreetViewPanorama(isLoaded, panoramaRef) {
         if (!window.google?.maps) return
 
         ensurePanoramaInitialized()
-
         const service = new window.google.maps.StreetViewService()
         
         const processPanorama = ({ data }) => {
@@ -163,21 +162,17 @@ function useStreetViewPanorama(isLoaded, panoramaRef) {
         }
 
         service.getPanorama({ location: initialPoint, radius: 1000 }).then(processPanorama)
-    }, [panoramaRef, ensurePanoramaInitialized])
+    }, [ensurePanoramaInitialized])
 
-    const zoomIn = useCallback(() => {
+    const adjustPanoramaZoom = useCallback((delta) => {
         const panorama = panoramaInstanceRef.current
         if (panorama && typeof panorama.getZoom === 'function') {
-            panorama.setZoom(panorama.getZoom() + 1)
+            panorama.setZoom(panorama.getZoom() + delta)
         }
     }, [])
 
-    const zoomOut = useCallback(() => {
-        const panorama = panoramaInstanceRef.current
-        if (panorama && typeof panorama.getZoom === 'function') {
-            panorama.setZoom(panorama.getZoom() - 1)
-        }
-    }, [])
+    const zoomIn = useCallback(() => adjustPanoramaZoom(1), [adjustPanoramaZoom])
+    const zoomOut = useCallback(() => adjustPanoramaZoom(-1), [adjustPanoramaZoom])
     
     useEffect(() => {
         if (!isLoaded || !window.google) return
@@ -203,8 +198,8 @@ function useTimer(initialSeconds, onTimeout) {
     useEffect(() => {
         if (seconds <= 0) {
             onTimeoutRef.current()
-                return
-            }
+            return
+        }
 
         const interval = setInterval(() => {
             setSeconds(prev => prev <= 1 ? 0 : prev - 1)
@@ -232,7 +227,10 @@ function useScoreBarAnimation(show, score, onComplete) {
     }, [score])
     
     useEffect(() => {
-        if (!show || !canvasRef.current || effectiveScore === 0) return
+        if (!show || !canvasRef.current || effectiveScore === 0) {
+            if (!show && onComplete) onComplete()
+            return
+        }
 
         const canvas = canvasRef.current
         const ctx = canvas.getContext("2d")
@@ -241,25 +239,27 @@ function useScoreBarAnimation(show, score, onComplete) {
 
         let fillTicks = 0
         let fillTicksAcc = 0
-        const { WIDTH_RATIO, TICK_MULTIPLIER, OFFSET } = SCORE_BAR_CONFIG
+        let completed = false
+        const { WIDTH_RATIO, TICK_MULTIPLIER, OFFSET, LINE_WIDTH, LINE_Y, LEFT_MARGIN, RIGHT_MARGIN, ACCELERATION } = SCORE_BAR_CONFIG
         const targetTicks = ((WIDTH_RATIO * canvasWidth) / TICK_MULTIPLIER) * 
                           (effectiveScore / MAX_SCORE) - OFFSET
+        const startX = LEFT_MARGIN * canvasWidth
+        const endX = RIGHT_MARGIN * canvasWidth
 
         const drawFrame = () => {
             if (fillTicks > targetTicks) {
-                if (onComplete) onComplete()
+                if (!completed && onComplete) {
+                    completed = true
+                    onComplete()
+                }
                 return false
             }
 
             fillTicks += 1 + fillTicksAcc
-            fillTicksAcc += SCORE_BAR_CONFIG.ACCELERATION
+            fillTicksAcc += ACCELERATION
 
             ctx.fillStyle = SCORE_BAR_COLORS.background
             ctx.fillRect(0, 0, canvasWidth, 50)
-
-            const { LINE_WIDTH, LINE_Y, LEFT_MARGIN, RIGHT_MARGIN } = SCORE_BAR_CONFIG
-            const startX = LEFT_MARGIN * canvasWidth
-            const endX = RIGHT_MARGIN * canvasWidth
 
             ctx.beginPath()
             ctx.lineWidth = LINE_WIDTH
@@ -286,7 +286,10 @@ function useScoreBarAnimation(show, score, onComplete) {
             }
         }, 1)
 
-        return () => clearInterval(interval)
+        return () => {
+            clearInterval(interval)
+            if (!completed && onComplete) onComplete()
+        }
     }, [show, effectiveScore, onComplete])
 
     return canvasRef
@@ -369,17 +372,17 @@ function useMapMarker(mapInstanceRef) {
         if (!mapInstanceRef.current || !window.google?.maps) return
         
         if (markerInstanceRef.current) {
-                markerInstanceRef.current.setMap(null)
+            markerInstanceRef.current.setMap(null)
             markerInstanceRef.current = null
         }
         
         if (position && !isDefaultPosition(position)) {
-                markerInstanceRef.current = new window.google.maps.Marker({
+            markerInstanceRef.current = new window.google.maps.Marker({
                 position,
-                    map: mapInstanceRef.current,
-                    title: 'Guess position',
-                    animation: window.google.maps.Animation.DROP
-                })
+                map: mapInstanceRef.current,
+                title: 'Guess position',
+                animation: window.google.maps.Animation.DROP
+            })
 
             if (shouldPan) {
                 mapInstanceRef.current.panTo(position)
@@ -436,35 +439,34 @@ function GuessMap({
         }
     }, [isExpanded])
 
-        if (!isLoaded) {
-            return (
-                <div id={styles["guessOverlay"]}>
-                    <div>Loading map...</div>
-                <button onClick={onSubmitGuess}>Submit guess!</button>
-                </div>
-            )
-        }
-        
+    if (!isLoaded) {
         return (
             <div id={styles["guessOverlay"]}>
-                <GoogleMap
-                    mapContainerStyle={mapContainerStyle}
+                <div>Loading map...</div>
+                <button onClick={onSubmitGuess}>Submit guess!</button>
+            </div>
+        )
+    }
+
+    return (
+        <div id={styles["guessOverlay"]}>
+            <GoogleMap
+                mapContainerStyle={mapContainerStyle}
                 defaultCenter={MAP_CENTER}
-                    defaultZoom={16}
+                defaultZoom={16}
                 onClick={handleMapClick}
-                    onLoad={handleMapLoad}
+                onLoad={handleMapLoad}
                 onDblClick={onToggleExpand}
                 options={{
                     streetViewControl: false,
                     disableDoubleClickZoom: true
                 }}
-                >
-                </GoogleMap>
+            />
             <button style={{ width: "400px", marginLeft: "200px" }} onClick={onSubmitGuess}>
                 Submit guess!
             </button>
-            </div>
-        )
+        </div>
+    )
 }
 
 function ScoreScreen({ 
@@ -475,15 +477,20 @@ function ScoreScreen({
     guessPoint, 
     isLoaded, 
     onNextRound,
-    onScoreBarComplete
+    onScoreBarComplete,
+    currentRound
 }) {
+    const router = useRouter()
+    const isGameComplete = currentRound > MAX_ROUNDS
     const scorebarRef = useScoreBarAnimation(show, score, onScoreBarComplete)
-    
-    useEffect(() => {
-        if (show) {
-            // Score screen sound effect will be handled by parent component
+
+    const handleButtonClick = useCallback(() => {
+        if (isGameComplete) {
+            router.push('/profile')
+        } else {
+            onNextRound()
         }
-    }, [show])
+    }, [isGameComplete, router, onNextRound])
 
     if (!show) {
         return (
@@ -504,9 +511,9 @@ function ScoreScreen({
 
     const mapCenter = getMapCenter(goalPoint, guessPoint)
     const mapZoom = getMapZoom(distance)
-        
-        return (
-                <div id={styles.scoreScreen}>
+
+    return (
+        <div id={styles.scoreScreen}>
             <img 
                 src="./logo.png" 
                 style={{ maxHeight: "60px", marginRight: "calc(100% - 70px)" }} 
@@ -520,15 +527,15 @@ function ScoreScreen({
                         marginLeft: "12.5vw", 
                         marginBottom: "10px" 
                     }}
-                        center={mapCenter}
-                        zoom={mapZoom}
+                    center={mapCenter}
+                    zoom={mapZoom}
                     options={{ streetViewControl: false }}
-                    >
-                        <MarkerF 
+                >
+                    <MarkerF 
                         position={goalPoint}
-                            title="Correct Location"
+                        title="Correct Location"
                         icon={{ url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" }}
-                        />
+                    />
                     {guessPoint && !isDefaultPosition(guessPoint) && (
                         <>
                             <MarkerF 
@@ -549,18 +556,20 @@ function ScoreScreen({
                     )}
                 </GoogleMap>
             )}
-                    <div id={styles["roundInformation"]}></div>
-                    <div id={styles["scoreBar"]}>
-                        <div id={styles["score"]}>{score}</div>
+            <div id={styles["roundInformation"]}></div>
+            <div id={styles["scoreBar"]}>
+                <div id={styles["score"]}>{score}</div>
                 <canvas 
                     id={styles["fillScorebar"]} 
                     height="70" 
                     width={window.innerWidth} 
                     ref={scorebarRef}
                 />
-                        <div id={styles["guessInfo"]}>{guessInfo}</div>
-                <button onClick={onNextRound}>Start next!</button>
-                </div>
+                <div id={styles["guessInfo"]}>{guessInfo}</div>
+                <button onClick={handleButtonClick}>
+                    {isGameComplete ? "Return to profile page" : "Start next!"}
+                </button>
+            </div>
         </div>
     )
 }
@@ -570,6 +579,7 @@ export default function Gameplay() {
     const [currentRound, setCurrentRound] = useState(1)
     const [isMapExpanded, setIsMapExpanded] = useState(false)
     const panoramaRef = useRef(null)
+    const scoreAddStartedRef = useRef(false)
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
@@ -591,13 +601,20 @@ export default function Gameplay() {
         () => handleSubmitGuess()
     )
 
+    const stopScoreAudio = useCallback(() => {
+        if (scoreAddStartedRef.current) {
+            scoreAddStartedRef.current = false
+            stopScoreAdd()
+        }
+    }, [stopScoreAdd])
+
     const handleSubmitGuess = useCallback(() => {
         playEffect("submit")
         gameLogic.submitGuess()
-        setShowScoreScreen(true)
         setCurrentRound(prev => prev + 1)
-        startScoreAdd()
-    }, [gameLogic, playEffect, startScoreAdd])
+        setShowScoreScreen(true)
+        setTimeout(() => playEffect("score"), 100)
+    }, [gameLogic, playEffect])
 
     const handleMapClick = useCallback((position) => {
         playEffect("place")
@@ -605,12 +622,13 @@ export default function Gameplay() {
     }, [gameLogic, playEffect])
 
     const handleScoreBarComplete = useCallback(() => {
-        stopScoreAdd()
-    }, [stopScoreAdd])
+        stopScoreAudio()
+    }, [stopScoreAudio])
 
     const startRound = useCallback(() => {
         if (currentRound > MAX_ROUNDS) return
 
+        stopScoreAudio()
         playEffect("place")
         const randomPoint = getRandomPoint()
         const newGoalPoint = createPosition(randomPoint.lat, randomPoint.long)
@@ -619,24 +637,21 @@ export default function Gameplay() {
         setShowScoreScreen(false)
         resetTimer(INITIAL_TIMER_SECONDS)
         findValidPanorama(newGoalPoint)
-    }, [currentRound, gameLogic, resetTimer, findValidPanorama, playEffect])
+    }, [currentRound, gameLogic, resetTimer, findValidPanorama, playEffect, stopScoreAudio])
 
     useEffect(() => {
-        if (showScoreScreen) {
-            playEffect("score")
+        if (showScoreScreen && gameLogic.score) {
+            stopScoreAdd()
+            scoreAddStartedRef.current = true
+            startScoreAdd()
+        } else if (!showScoreScreen) {
+            stopScoreAudio()
         }
-    }, [showScoreScreen, playEffect])
+    }, [showScoreScreen, gameLogic.score, startScoreAdd, stopScoreAdd, stopScoreAudio])
 
     useEffect(() => {
         if (showScoreScreen) return
-        if (timerSeconds > 0 && timerSeconds <= TIMER_TICK_SECONDS) {
-            playEffect("tick")
-        }
-    }, [timerSeconds, showScoreScreen, playEffect])
-
-    useEffect(() => {
-        if (showScoreScreen) return
-        if (timerSeconds === TIMER_WARNING_SECONDS) {
+        if (timerSeconds === TIMER_WARNING_SECONDS || (timerSeconds > 0 && timerSeconds <= TIMER_TICK_SECONDS)) {
             playEffect("tick")
         }
     }, [timerSeconds, showScoreScreen, playEffect])
@@ -669,6 +684,7 @@ export default function Gameplay() {
                 isLoaded={isLoaded}
                 onNextRound={startRound}
                 onScoreBarComplete={handleScoreBarComplete}
+                currentRound={currentRound}
             />
         </div>
     )
