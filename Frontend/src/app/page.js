@@ -3,7 +3,7 @@
 "use client"
 
 import styles from "./page.module.css";
-import Button from "../components/Button";
+import SettingsModal from "@/components/SettingsModal";
 import Link from "next/link";
 import React from "react";
 
