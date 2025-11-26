@@ -47,7 +47,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     const dLat = (lat2 - lat1) * Math.PI / 180
     const dLon = (lon2 - lon1) * Math.PI / 180
     const a = Math.sin(dLat / 2) ** 2 + 
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
               Math.sin(dLon / 2) ** 2
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
@@ -168,7 +168,7 @@ function useStreetViewPanorama(isLoaded, panoramaRef) {
         const panorama = panoramaInstanceRef.current
         if (panorama && typeof panorama.getZoom === 'function') {
             panorama.setZoom(panorama.getZoom() + delta)
-        }
+            }
     }, [])
 
     const zoomIn = useCallback(() => adjustPanoramaZoom(1), [adjustPanoramaZoom])
@@ -198,8 +198,8 @@ function useTimer(initialSeconds, onTimeout) {
     useEffect(() => {
         if (seconds <= 0) {
             onTimeoutRef.current()
-            return
-        }
+                return
+            }
 
         const interval = setInterval(() => {
             setSeconds(prev => prev <= 1 ? 0 : prev - 1)
@@ -367,22 +367,22 @@ function ControlOverlay({ onZoomIn, onZoomOut }) {
 
 function useMapMarker(mapInstanceRef) {
     const markerInstanceRef = useRef(null)
-
+    
     const updateMarker = useCallback((position, shouldPan = true) => {
         if (!mapInstanceRef.current || !window.google?.maps) return
         
         if (markerInstanceRef.current) {
-            markerInstanceRef.current.setMap(null)
+                markerInstanceRef.current.setMap(null)
             markerInstanceRef.current = null
         }
         
         if (position && !isDefaultPosition(position)) {
-            markerInstanceRef.current = new window.google.maps.Marker({
+                markerInstanceRef.current = new window.google.maps.Marker({
                 position,
-                map: mapInstanceRef.current,
-                title: 'Guess position',
-                animation: window.google.maps.Animation.DROP
-            })
+                    map: mapInstanceRef.current,
+                    title: 'Guess position',
+                    animation: window.google.maps.Animation.DROP
+                })
 
             if (shouldPan) {
                 mapInstanceRef.current.panTo(position)
@@ -439,23 +439,23 @@ function GuessMap({
         }
     }, [isExpanded])
 
-    if (!isLoaded) {
+        if (!isLoaded) {
+            return (
+                <div id={styles["guessOverlay"]}>
+                    <div>Loading map...</div>
+                <button onClick={onSubmitGuess}>Submit guess!</button>
+                </div>
+            )
+        }
+        
         return (
             <div id={styles["guessOverlay"]}>
-                <div>Loading map...</div>
-                <button onClick={onSubmitGuess}>Submit guess!</button>
-            </div>
-        )
-    }
-
-    return (
-        <div id={styles["guessOverlay"]}>
-            <GoogleMap
-                mapContainerStyle={mapContainerStyle}
+                <GoogleMap
+                    mapContainerStyle={mapContainerStyle}
                 defaultCenter={MAP_CENTER}
-                defaultZoom={16}
+                    defaultZoom={16}
                 onClick={handleMapClick}
-                onLoad={handleMapLoad}
+                    onLoad={handleMapLoad}
                 onDblClick={onToggleExpand}
                 options={{
                     streetViewControl: false,
@@ -465,8 +465,8 @@ function GuessMap({
             <button style={{ width: "400px", marginLeft: "200px" }} onClick={onSubmitGuess}>
                 Submit guess!
             </button>
-        </div>
-    )
+            </div>
+        )
 }
 
 function ScoreScreen({ 
@@ -492,7 +492,7 @@ function ScoreScreen({
         }
     }, [isGameComplete, router, onNextRound])
 
-    if (!show) {
+        if (!show) {
         return (
             <div style={{ visibility: "hidden", display: "none" }}>
                 <canvas 
@@ -503,17 +503,17 @@ function ScoreScreen({
                 />
             </div>
         )
-    }
-
+        }
+        
     const distance = guessPoint && !isDefaultPosition(guessPoint)
         ? calculateDistance(guessPoint.lat, guessPoint.lng, goalPoint.lat, goalPoint.lng)
         : 0
 
     const mapCenter = getMapCenter(goalPoint, guessPoint)
     const mapZoom = getMapZoom(distance)
-
-    return (
-        <div id={styles.scoreScreen}>
+        
+        return (
+                <div id={styles.scoreScreen}>
             <img 
                 src="./logo.png" 
                 style={{ maxHeight: "60px", marginRight: "calc(100% - 70px)" }} 
@@ -527,15 +527,15 @@ function ScoreScreen({
                         marginLeft: "12.5vw", 
                         marginBottom: "10px" 
                     }}
-                    center={mapCenter}
-                    zoom={mapZoom}
+                        center={mapCenter}
+                        zoom={mapZoom}
                     options={{ streetViewControl: false }}
-                >
-                    <MarkerF 
+                    >
+                        <MarkerF 
                         position={goalPoint}
-                        title="Correct Location"
+                            title="Correct Location"
                         icon={{ url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" }}
-                    />
+                        />
                     {guessPoint && !isDefaultPosition(guessPoint) && (
                         <>
                             <MarkerF 
@@ -556,20 +556,20 @@ function ScoreScreen({
                     )}
                 </GoogleMap>
             )}
-            <div id={styles["roundInformation"]}></div>
-            <div id={styles["scoreBar"]}>
-                <div id={styles["score"]}>{score}</div>
+                    <div id={styles["roundInformation"]}></div>
+                    <div id={styles["scoreBar"]}>
+                        <div id={styles["score"]}>{score}</div>
                 <canvas 
                     id={styles["fillScorebar"]} 
                     height="70" 
                     width={window.innerWidth} 
                     ref={scorebarRef}
                 />
-                <div id={styles["guessInfo"]}>{guessInfo}</div>
+                        <div id={styles["guessInfo"]}>{guessInfo}</div>
                 <button onClick={handleButtonClick}>
                     {isGameComplete ? "Return to profile page" : "Start next!"}
                 </button>
-            </div>
+                </div>
         </div>
     )
 }
