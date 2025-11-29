@@ -1,10 +1,6 @@
 
 import { auth } from "../components/firebase-config";
-import {
-  GoogleAuthProvider,
-  deleteUser,
-  reauthenticateWithPopup
-} from "firebase/auth";
+import { deleteUser } from "firebase/auth";
 import { useRouter} from "next/navigation"; 
 
 import styles from "./DeleteAccount.module.css"
@@ -16,8 +12,6 @@ export default function DeleteAccount() {
     const handleDelete = async () => {
         const user = auth?.currentUser;
         try {
-            const googleProvider = new GoogleAuthProvider();
-            await reauthenticateWithPopup(user, googleProvider);
             await deleteUser(user);
             router.push("/login")
         }
