@@ -6,6 +6,7 @@ import SettingsModal from "../components/SettingsModal"
 // that volume/mute state is shared across pages.
 import AudioProvider from "../components/AudioProvider";
 import GlobalButtonSfx from "../components/GlobalButtonSfx";
+import Particles from "@/components/Particles.js";
 export const metadata = {
   title: "Play GeoUIUC!",
   description: "CS124H - FA25 Group 3's Project",
@@ -21,8 +22,10 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         {/* Wrap the entire app with AudioProvider so Settings and Game can control sound */}
+
         <AudioProvider>
           <main>{children}</main>
+          <Particles></Particles>
           {/* Global UI helpers */}
           <GlobalButtonSfx />
           {/* Global settings button/modal on all pages */}
