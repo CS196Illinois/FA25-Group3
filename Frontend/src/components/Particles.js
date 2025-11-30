@@ -2,10 +2,14 @@
 import { useRef, useState, useEffect, useCallback, React } from 'react'
 
 let pArr = []
+let SNOW_COLLECTING = false
+let SNOW_FALLING = true
 export default function Particles() {
     const [ticks, setTicks] = useState(0)
     const particleCanvas = useRef()
     let timerInterval
+
+
     useEffect(() => {
         timerInterval = setInterval(() => {
             setTicks(ticks + 1)
@@ -16,7 +20,7 @@ export default function Particles() {
         }
     }, [ticks])
 
-    if (true) { // add like a settings thing for this later maybe or we just don't use it idk
+    if (SNOW_FALLING) { // add like a settings thing for this later maybe or we just don't use it idk
         return (<>
             <canvas style={{ zIndex: 15, position: "absolute", top: 0, pointerEvents: "none" }} ref={particleCanvas}></canvas>
         </>)
@@ -47,8 +51,13 @@ export default function Particles() {
             pArr[i][3] += (Math.random() * .5) - .25
             scrn.drawImage(im, pArr[i][0], pArr[i][1], 15, 15)
             if (pArr[i][0] > window.innerWidth || pArr[i][1] > window.innerHeight || pArr[i][0] < -10 || pArr[i][1] < -10) {
-                pArr[i] = [i * Math.random(0, 6) * 10, 0, 0, 0]
+                pArr[i] = [i * Math.random(0, 6) * 10, - 8, 0, 0]
             }
+        }
+        if (SNOW_COLLECTING) {
+            let im2 = new Image()
+            im2.src = "snowmound.png"
+            scrn.drawImage(im2, 0, Math.max(-window.innerHeight, 300 - (ticks)))
         }
     }
 }

@@ -64,13 +64,13 @@ export default function SettingsModal() {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-    } catch {}
+    } catch { }
     // Optional: clear any stored profile data
     try {
       localStorage.removeItem("name");
       localStorage.removeItem("email");
       localStorage.removeItem("profilePic");
-    } catch {}
+    } catch { }
     setOpen(false);
     setTimeout(() => router.push("/login"), 200);
   };
@@ -123,37 +123,37 @@ export default function SettingsModal() {
                 )}
               </div>
             </div>
-            
+
             {/* Effect Volume Slider */}
             <div className={styles.sliderContainer}>
               <label>
                 <FaVolumeUp className={styles.icon} />
                 Effects Volume: {effectsPct}%</label>
-                <input 
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={effectsPct}
-                  onChange={(e) => {
-                    const pct = Number(e.target.value); // 0-100
-                    setEffectsPct(pct);
-                    setEffectsGainLive(pct / 100);      // live gain update only
-                  }}
-                  onPointerUp={commitVolumes}
-                  onMouseUp={commitVolumes}
-                  onTouchEnd={commitVolumes}
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={effectsPct}
+                onChange={(e) => {
+                  const pct = Number(e.target.value); // 0-100
+                  setEffectsPct(pct);
+                  setEffectsGainLive(pct / 100);      // live gain update only
+                }}
+                onPointerUp={commitVolumes}
+                onMouseUp={commitVolumes}
+                onTouchEnd={commitVolumes}
                 style={{
-                background: `linear-gradient(to right, #ff7f00 ${effectsPct}%, #ffd7a0 ${effectsPct}%)`,
+                  background: `linear-gradient(to right, #ff7f00 ${effectsPct}%, #ffd7a0 ${effectsPct}%)`,
                 }}
               />
-              </div>
+            </div>
             {/* Music Volume Slider */}
             <div className={styles.sliderContainer}>
               <label>
                 <FaMusic className={styles.icon} />
                 Music Volume: {musicPct}%
               </label>
-              <input 
+              <input
                 type="range"
                 min="0"
                 max="100"
@@ -167,12 +167,12 @@ export default function SettingsModal() {
                 onMouseUp={commitVolumes}
                 onTouchEnd={commitVolumes}
                 style={{
-                background: `linear-gradient(to right, #ff7f00 ${musicPct}%, #ffd7a0 ${musicPct}%)`,
+                  background: `linear-gradient(to right, #ff7f00 ${musicPct}%, #ffd7a0 ${musicPct}%)`,
                 }}
               />
-            
+
             </div>
-             <div className={styles.buttons}>
+            <div className={styles.buttons}>
               {isLobbyPage ? (
                 <button onClick={() => { commitVolumes(); setOpen(false); }}>Close</button>
               ) : (isHomePage || isLoginPage ? (
