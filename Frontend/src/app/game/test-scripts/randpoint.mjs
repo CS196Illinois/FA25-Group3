@@ -26,7 +26,7 @@ for (let i = 0; i < perimeter.length - 2; i += 2) {
 
 let boundingData = { topLongitude: -88.24238428986186, topLatitude: 40.11611769953682, bottomLongitude: -88.20952176360476, bottomLatitude: 40.08842958076448 }
 
-function getRandomPoint() {
+export function getRandomPoint() {
     let randomPoint
     let WARN = 0
     while (WARN < 1000) {
