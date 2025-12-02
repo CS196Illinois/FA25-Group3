@@ -29,46 +29,81 @@ export default function Login() {
       if (user) {
         // User is signed in.
         const userRef = doc(db, "users", user.uid);
-
-        // Define the template data for a new or existing user document.
-        const templateUserData = {
-          // Essential Auth data, directly from the user object
-          email: user.email,
-          displayName: user.displayName,
-          // profilePicture is already here, pulling from user.photoURL
-          profilePicture: user.photoURL,
-
-          // Application-specific fields with default "blank" values
-          highScore: 0,
-          totalPoints: 0,
-          dailyStreak: 0,
-
-          // New fields as requested:
-          bio: "", // Initialize bio as an empty string
-          recentScores: [0, 0, 0, 0, 0], // Array of 5 individual ints initialized to 0
-          userID: user.uid, // Store the user's UID explicitly
-
-          // Timestamps for metadata:
-          createdAt: user.metadata.creationTime
-            ? new Date(user.metadata.creationTime)
-            : null,
-        };
+        let dataToUpdate = {}; // This object will store what we eventually write
 
         try {
-          await setDoc(userRef, templateUserData, { merge: true });
-          console.log(
-            "User document created/updated (template applied) successfully for UID:",
-            user.uid
-          );
+          // --- 1. Fetch current user data from Firestore ---
+          const docSnap = await getDoc(userRef);
+          const existingData = docSnap.exists() ? docSnap.data() : {};
 
+          // --- 2. Prepare base user data and ensure defaults for non-streak fields ---
+          // Essential Auth data (always update/set)
+          dataToUpdate = {
+            email: user.email,
+            displayName: user.displayName,
+            profilePicture: user.photoURL,
+            userID: user.uid,
+            createdAt: user.metadata.creationTime ? new Date(user.metadata.creationTime) : null,
+          };
+
+          // Application-specific fields: preserve if they exist, otherwise set default.
+          // Using nullish coalescing operator (??) for this.
+          dataToUpdate.highScore = existingData.highScore ?? 0;
+          dataToUpdate.totalPoints = existingData.totalPoints ?? 0;
+          dataToUpdate.recentScores = existingData.recentScores ?? [0, 0, 0, 0, 0];
+          // *** The 'bio' field is intentionally omitted here as requested ***
+
+          // --- 3. Implement Daily Streak Logic (Client-Side) ---
+          let newDailyStreak = existingData.dailyStreak ?? 0; // Initialize with existing streak or 0
+          // existingData.lastLoginDate will be a Firestore Timestamp object if it exists
+          let currentLastLoginDateTimestamp = existingData.lastLoginDate;
+          let newLastLoginDate = serverTimestamp(); // Mark the current login time with a server-generated timestamp
+
+          // Convert the stored Firestore Timestamp to a JavaScript Date object for client-side comparison
+          const lastLoginDateAsDate = currentLastLoginDateTimestamp ? currentLastLoginDateTimestamp.toDate() : null;
+
+          // Normalize dates to the start of the day for accurate comparison (using local time zone)
+          const now = new Date();
+          const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          const yesterdayStart = new Date(todayStart);
+          yesterdayStart.setDate(todayStart.getDate() - 1); // Subtract 1 day
+          const twoDaysAgoStart = new Date(todayStart);
+          twoDaysAgoStart.setDate(todayStart.getDate() - 2); // Subtract 2 days
+
+          if (!lastLoginDateAsDate) {
+            // First ever login for this user, or 'lastLoginDate' was never set. Start streak at 1.
+            newDailyStreak = 1;
+          } else if (lastLoginDateAsDate.getTime() >= todayStart.getTime()) {
+            // User has already logged in today (or performed the streak-eligible action today).
+            // Do not increment streak. Keep current streak and the original lastLoginDate timestamp.
+            newDailyStreak = existingData.dailyStreak; // Preserve the current streak count
+            newLastLoginDate = currentLastLoginDateTimestamp; // Preserve original timestamp for today's login
+          } else if (lastLoginDateAsDate.getTime() >= yesterdayStart.getTime()) {
+            // User logged in yesterday. Streak continues! Increment streak by 1.
+            newDailyStreak += 1;
+          } else {
+            // User did not log in yesterday (last login was 2 or more days ago). Streak broken, reset to 1.
+            newDailyStreak = 1;
+          }
+
+          // Add the calculated streak and lastLoginDate to the data to be updated
+          dataToUpdate.dailyStreak = newDailyStreak;
+          dataToUpdate.lastLoginDate = newLastLoginDate;
+
+          // --- 4. Write/Update User Document to Firestore ---
+          // The { merge: true } option is crucial here. It will:
+          // - Add new fields (like lastLoginDate if it doesn't exist).
+          // - Update existing fields with the new values provided (like dailyStreak).
+          // - Leave other existing fields untouched if not specified in dataToUpdate.
+          await setDoc(userRef, dataToUpdate, { merge: true });
+          console.log("User document updated (defaults + streak applied) successfully for UID:", user.uid);
+
+          // Redirect to lobby after successful login and data update
           if (router.pathname === "/") {
             router.push("/lobby");
           }
         } catch (error) {
-          console.error(
-            "Error applying template user document to Firestore:",
-            error
-          );
+          console.error("Error updating user document with streak logic:", error);
         }
       } else {
         console.log("No user is signed in.");
@@ -76,7 +111,7 @@ export default function Login() {
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, [router]); // router is a dependency because it's used inside useEffect
 
   const handleLoginSuccess = () => {
     // This function is still called after signInWithGoogle,
