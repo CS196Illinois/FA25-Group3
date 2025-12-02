@@ -664,7 +664,12 @@ useEffect(() => {
     }
 }, [showScoreScreen, gameLogic.score, currentRound, startScoreAdd, stopScoreAdd, stopScoreAudio])
 
-// Removed timer-based audio: no ticks or alerts tied to timer
+useEffect(() => {
+    if (showScoreScreen) return
+    if (timerSeconds === TIMER_WARNING_SECONDS || (timerSeconds > 0 && timerSeconds <= TIMER_TICK_SECONDS)) {
+        playEffect("tick")
+    }
+}, [timerSeconds, showScoreScreen, playEffect])
 
 return (
     <div className={styles.umbrella} style={styles}>
