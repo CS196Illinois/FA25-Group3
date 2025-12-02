@@ -4,6 +4,9 @@ import { useState, useRef, useEffect } from "react";
 import styles from "./page.module.css";
 import LoginButton from "../../components/LoginButton.js";
 import { useRouter } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "../../components/firebase-config";
 
 // Move videos array outside component so it doesn't recreate on every render
 const videos = [
@@ -20,8 +23,68 @@ const videos = [
 
 export default function Login() {
   const router = useRouter();
-  const handleLoginSuccess = () => router.push("/lobby");
+  useEffect(() => {
+    // Set up the authentication state listener
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // User is signed in.
+        const userRef = doc(db, "users", user.uid);
 
+        // Define the template data for a new or existing user document.
+        const templateUserData = {
+          // Essential Auth data, directly from the user object
+          email: user.email,
+          displayName: user.displayName,
+          // profilePicture is already here, pulling from user.photoURL
+          profilePicture: user.photoURL,
+
+          // Application-specific fields with default "blank" values
+          highScore: 0,
+          totalPoints: 0,
+          dailyStreak: 0,
+
+          // New fields as requested:
+          bio: "", // Initialize bio as an empty string
+          recentScores: [0, 0, 0, 0, 0], // Array of 5 individual ints initialized to 0
+          userID: user.uid, // Store the user's UID explicitly
+
+          // Timestamps for metadata:
+          createdAt: user.metadata.creationTime
+            ? new Date(user.metadata.creationTime)
+            : null,
+        };
+
+        try {
+          await setDoc(userRef, templateUserData, { merge: true });
+          console.log(
+            "User document created/updated (template applied) successfully for UID:",
+            user.uid
+          );
+
+          if (router.pathname === "/") {
+            router.push("/lobby");
+          }
+        } catch (error) {
+          console.error(
+            "Error applying template user document to Firestore:",
+            error
+          );
+        }
+      } else {
+        console.log("No user is signed in.");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
+  const handleLoginSuccess = () => {
+    // This function is still called after signInWithGoogle,
+    // but the actual redirection and Firestore update are now handled by the useEffect.
+    // You can keep this console.log for debugging or remove the function if no other action is needed here.
+    console.log("LoginButton clicked, authentication process initiated.");
+    router.push("/lobby");
+  };
   const [index, setIndex] = useState(0);
   const [active, setActive] = useState(true);
   const videoARef = useRef(null);
@@ -30,9 +93,9 @@ export default function Login() {
   useEffect(() => {
     const currentVideo = active ? videoARef.current : videoBRef.current;
     const nextVideo = active ? videoBRef.current : videoARef.current;
-    
+
     if (!currentVideo || !nextVideo) return;
-    
+
     let preloaded = false;
 
     const handleTimeUpdate = () => {
