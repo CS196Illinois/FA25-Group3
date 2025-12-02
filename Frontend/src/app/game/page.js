@@ -23,7 +23,7 @@ const MAX_SCORE = 5000
 const INITIAL_TIMER_SECONDS = 119
 const GOOGLE_MAPS_LIBRARIES = ['places']
 const GOOGLE_MAPS_API_KEY = "AIzaSyAsEYGOKBJHsMyWQ4QvAqAmI_BQm7vxpAk"
-
+let userIcon
 const SCORE_BAR_CONFIG = {
     LINE_WIDTH: 50,
     LINE_Y: 35,
@@ -333,6 +333,7 @@ function useGameLogic(goalPoint) {
             : MAX_DISTANCE_IN_BOUNDS
 
         const calculatedScore = calculateScore(distance)
+
         setScore(`${calculatedScore}pts`)
         setGuessInfo(formatDistanceText(distance, hasGuess))
         setSubmittedGoal(goalPoint)
@@ -527,10 +528,7 @@ function ScoreScreen({
 
     const mapCenter = getMapCenter(goalPoint, guessPoint)
     const mapZoom = getMapZoom(distance)
-    const userIcon = {
-        url: calculateDataURL(),
-        scaledSize: new google.maps.Size(50, 50)
-    }
+
     const flagIcon = {
         url: "flag.png",
         scaledSize: new google.maps.Size(65, 50)
@@ -609,7 +607,10 @@ export default function Gameplay() {
     const panoramaRef = useRef(null)
     const scoreAddStartedRef = useRef(false)
     const hasMarkerPlacedRef = useRef(false)
-
+    userIcon = {
+        url: calculateDataURL(),
+        scaledSize: new google.maps.Size(50, 50)
+    }
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: GOOGLE_MAPS_API_KEY,
@@ -736,7 +737,7 @@ export default function Gameplay() {
 function calculateDataURL() {
     let canvas = document.body.appendChild(document.createElement("canvas"))
     let scrn = canvas.getContext("2d")
-    let im = document.body.appendChild(document.createElement("img"))
+    let im = new Image()
     im.crossOrigin = "anonymous"
     // im.src = "flag.png"
 
