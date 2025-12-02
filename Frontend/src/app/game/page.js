@@ -231,8 +231,12 @@ function useScoreBarAnimation(show, score, onComplete) {
     }, [score])
 
     useEffect(() => {
-        if (!show || !canvasRef.current || effectiveScore === 0) {
+        if (!show || !canvasRef.current) {
             if (!show && onComplete) onComplete()
+            return
+        }
+        if (effectiveScore === 0) {
+            if (onComplete) onComplete()
             return
         }
 

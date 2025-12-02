@@ -39,6 +39,8 @@ export default function SettingsModal() {
   // Local slider state (0-100) to avoid thrashing global context during drag
   const [musicPct, setMusicPct] = useState(Math.round((musicVolume ?? 0) * 100));
   const [effectsPct, setEffectsPct] = useState(Math.round((effectsVolume ?? 0) * 100));
+  // Snow intensity level (0=Off, 1=Light, 2=Normal, 3=Heavy, 4=Blizzard)
+  const [snowLevel, setSnowLevel] = useState(2);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -87,13 +89,25 @@ export default function SettingsModal() {
       try {
         const mv = Number(localStorage.getItem("musicVolume"));
         const ev = Number(localStorage.getItem("effectsVolume"));
+        const lvl = parseInt(localStorage.getItem("snowLevel"), 10);
+        const legacy = parseInt(localStorage.getItem("snowParticles"), 10);
         if (!Number.isNaN(mv)) setMusicPct(Math.round(mv * 100));
         else setMusicPct(Math.round((musicVolume ?? 0) * 100));
         if (!Number.isNaN(ev)) setEffectsPct(Math.round(ev * 100));
         else setEffectsPct(Math.round((effectsVolume ?? 0) * 100));
+        if (!Number.isNaN(lvl)) setSnowLevel(Math.max(0, Math.min(4, lvl)));
+        else if (!Number.isNaN(legacy)) {
+          // Map legacy particle count to nearest level
+          const count = Math.max(0, Math.min(3000, legacy));
+          const toLevel = (c) => (c <= 0 ? 0 : c <= 200 ? 1 : c <= 600 ? 2 : c <= 1200 ? 3 : 4);
+          setSnowLevel(toLevel(count));
+        } else {
+          setSnowLevel(2);
+        }
       } catch {
         setMusicPct(Math.round((musicVolume ?? 0) * 100));
         setEffectsPct(Math.round((effectsVolume ?? 0) * 100));
+        setSnowLevel(2);
       }
     }
   }, [open, ensureAudio, startMusic, musicVolume, effectsVolume]);
@@ -111,6 +125,14 @@ export default function SettingsModal() {
     setMusicVolume((musicPct ?? 0) / 100);
     setEffectsVolume((effectsPct ?? 0) / 100);
   }, [musicPct, effectsPct, setMusicVolume, setEffectsVolume]);
+  const commitSnow = useCallback(() => {
+    try {
+      const levels = [0, 200, 600, 1200, 2000];
+      const count = levels[Math.max(0, Math.min(4, snowLevel))];
+      localStorage.setItem("snowLevel", String(snowLevel));
+      localStorage.setItem("snowParticles", String(count));
+    } catch {}
+  }, [snowLevel]);
   // change this stuff below, this is just so we have a way to actually open the settings for now
   return (
     <>
@@ -179,6 +201,35 @@ export default function SettingsModal() {
                 }}
               />
             
+            </div>
+            {/* Snow Intensity Slider */}
+            <div className={styles.sliderContainer}>
+              <label>
+                ❄️ Snow: {['Off','Light','Normal','Heavy','Blizzard'][snowLevel]}
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="4"
+                step="1"
+                value={snowLevel}
+                onChange={(e) => {
+                  const lvl = Number(e.target.value);
+                  setSnowLevel(lvl);
+                  // live update: write both level and mapped particle count
+                  try {
+                    const levels = [0, 200, 600, 1200, 2000];
+                    localStorage.setItem("snowLevel", String(lvl));
+                    localStorage.setItem("snowParticles", String(levels[lvl] ?? 600));
+                  } catch {}
+                }}
+                onPointerUp={commitSnow}
+                onMouseUp={commitSnow}
+                onTouchEnd={commitSnow}
+                style={{
+                  background: `linear-gradient(to right, #ff7f00 ${snowLevel*25}%, #ffd7a0 ${snowLevel*25}%)`,
+                }}
+              />
             </div>
              <div className={styles.buttons}>
               {isLobbyPage ? (
