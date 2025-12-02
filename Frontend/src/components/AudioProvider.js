@@ -13,7 +13,6 @@ const AudioCtx = createContext({
   playEffect: () => {},
   ensureAudio: () => {},
   startMusic: () => {},
-  stopMusic: () => {},
 });
 
 export function useAudio() {
@@ -120,13 +119,6 @@ export default function AudioProvider({ children }) {
     } catch {}
   }, [ensureAudio, currentMusicUrl]);
 
-  const stopMusic = useCallback(() => {
-    const el = musicElRef.current;
-    if (el) {
-      try { el.pause(); } catch {}
-    }
-  }, []);
-
   // Score fill sound: short repeating blips that stop when caller requests
   const startScoreAdd = useCallback(() => {
     ensureAudio();
@@ -192,10 +184,9 @@ export default function AudioProvider({ children }) {
     playEffect,
     ensureAudio,
     startMusic,
-    stopMusic,
     startScoreAdd,
     stopScoreAdd,
-  }), [setMusicVolume, setEffectsVolume, setMusicGainLive, setEffectsGainLive, playEffect, ensureAudio, startMusic, stopMusic]);
+  }), [setMusicVolume, setEffectsVolume, setMusicGainLive, setEffectsGainLive, playEffect, ensureAudio, startMusic]);
 
   return <AudioCtx.Provider value={value}>{children}</AudioCtx.Provider>;
 }

@@ -1,5 +1,6 @@
 import "./globals.css";
 import SettingsModal from "../components/SettingsModal"
+import Particles from "@/components/Particles";
 // AudioProvider wraps the whole app so any page/component can access audio controls.
 // How it works: it provides a React Context with helpers (startMusic, playEffect,
 // set volumes). Wrapping at the root ensures there is a single AudioContext and
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
           <main>{children}</main>
           <GlobalButtonSfx />
           {/* Global settings button/modal on all pages */}
+          <Particles></Particles>
           <SettingsModal />
         </AudioProvider>
       </body>
