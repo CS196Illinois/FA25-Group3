@@ -63,6 +63,14 @@ export default function Gameplay() {
         ensureAudio();
         startMusic();
     }, [ensureAudio, startMusic]);
+    const lastPlaceSoundRef = useRef(0)
+    const beepPlace = useCallback(() => {
+        const now = Date.now();
+        if (now - lastPlaceSoundRef.current > 400) {
+            playEffect()
+            lastPlaceSoundRef.current = now;
+        }
+    }, [playEffect])
 
     useEffect(() => {
         // Do not schedule timer ticks while the score screen is visible
@@ -162,7 +170,7 @@ export default function Gameplay() {
             lng: e.latLng.lng()
         })
         // Play a beep when the player places a guess on the small map
-        playEffect()
+        beepPlace()
         // console.log(e)
         setUserGuessPosition({
             lat: e.latLng.lat(),
@@ -183,7 +191,7 @@ export default function Gameplay() {
             lng: e.latLng.lng()
         })
         // Also beep on mouse up in case onClick didn't fire (drag/drop)
-        playEffect()
+        beepPlace()
     }
     const UIOverlay = useCallback(() => {
         return (
