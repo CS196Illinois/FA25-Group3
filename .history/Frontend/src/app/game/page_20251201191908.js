@@ -1,19 +1,8 @@
-/*
-TO DO FOR ME:
-MAKE THE ZOOM WORK
-
-*/
-
-
-
-
-
-
 "use client"
 import { useRef, useState, useEffect, useCallback, React } from 'react'
 
 import Link from 'next/link'
-import { GoogleMap, MarkerF, PolylineF, useJsApiLoader } from "@react-google-maps/api"
+import { GoogleMap, MarkerF, LoadScript, StreetViewPanorama, useJsApiLoader } from "@react-google-maps/api"
 
 import { getRandomPoint } from "./test-scripts/randpoint.js"
 import styles from "./page.module.css";
@@ -123,16 +112,16 @@ export default function Gameplay() {
             panControl: false,
         }) */
         function processData({ data }) {
+            console.log(data)
 
             if (data.copyright.indexOf("Google") < 1) {
                 point = { lat: getRandomPoint().lat, lng: getRandomPoint().long }
                 setGoalPoint(point)
                 service.getPanorama({ location: point, radius: 1000 }).then(processData)
             }
-            setGoalPoint({ lat: data.location.latLng.lat(), lng: data.location.latLng.lng() })
             panorama.setPano(data.location.pano);
             panorama.setVisible(true);
-            panorama.setOptions({ zoomControl: true, linksControl: true, addressControl: false, panControl: false, showRoadLabels: false })
+            panorama.setOptions({ zoomControl: false, linksControl: true, addressControl: false, panControl: false, showRoadLabels: false })
         }
 
     }, [isLoaded])
@@ -147,18 +136,22 @@ export default function Gameplay() {
         return (
             <div id={styles["guessOverlay"]}>
                 {isLoaded ? (<GoogleMap
-                    mapContainerStyle={{ width: '600px', height: '400px', marginBottom: "15px" }}
+                    mapContainerStyle={{ width: '400px', height: '400px', marginBottom: "15px" }}
                     center={mapCenter}
-                    zoom={mapZoom}
+                    zoom={16}
                     onClick={doThing}
-                    onMouseUp={doStupidMapCenterMoveThing}
                     onLoad={(e) => {
-                        if (typeof map == "undefined") {
+                        if (!map) {
                             setMap(e)
                         }
                     }}
-                    onZoomChanged={handleZoomChanged}
-                    // onCenterChanged={handlePosChange}
+                    onCenterChanged={() => {
+                        if (typeof map == "undefined") {
+                            setMapCenter(center)
+                            return
+                        }
+                        setMapCenter({ lat: map.getCenter().lat(), lng: map.getCenter().lng() })
+                    }}
                     options={{
                         streetViewControl: false,
                         // restriction: {
@@ -169,16 +162,11 @@ export default function Gameplay() {
                 ><MarkerF position={userGuessPosition}>Guess position</MarkerF>
                 </GoogleMap>) : <></>
                 }
-                <button style={{ width: "400px", marginLeft: "200px" }} onClick={() => { submitGuess() }}>Submit guess!</button>
+                <button onClick={() => { submitGuess() }}>Submit guess!</button>
             </div >
         )
     }, [isLoaded, userGuessPosition, mapZoom, mapCenter, map])
     function doThing(e) {
-        setHasGuessed(true)
-        console.log({
-            lat: e.latLng.lat(),
-            lng: e.latLng.lng()
-        })
         // Play a beep when the player places a guess on the small map
         beepPlace()
         // console.log(e)
@@ -186,12 +174,7 @@ export default function Gameplay() {
             lat: e.latLng.lat(),
             lng: e.latLng.lng()
         })
-
-    }
-    function doStupidMapCenterMoveThing(e) {
-        console.log({ lat: map.center.lat(), lng: map.center.lng() })
-        setHasGuessed(true)
-
+        setVisible(true)
         setMapCenter({
             lat: e.latLng.lat(),
             lng: e.latLng.lng()
@@ -256,11 +239,7 @@ export default function Gameplay() {
         startScoreAdd()
         barInterval = setInterval(fillGuessBar, 1, scorebarFillRef, stopScoreAdd)
         setScore(effectiveScore + "pts")
-        setGuessInfo("You didn't guess!")
-        if (hasGuessed) {
-            setGuessInfo("Your guess was " + distance.toString().substring(0, distance.toString().indexOf(".") + 3) + "km from the correct location!")
-        }
-
+        setGuessInfo("Your guess was " + distance.toString().substring(0, distance.toString().indexOf(".") + 3) + "km from the correct location!")
         /*
             -map showing distance between guess and real place
             -score (with slidy bar)
@@ -293,12 +272,11 @@ export default function Gameplay() {
 
             if (data.copyright.indexOf("Google") < 1) {
                 service.getPanorama({ location: pt, radius: 1000 }).then(processData)
-                return
             }
-            setGoalPoint({ lat: data.location.latLng.lat(), lng: data.location.latLng.lng() })
+            setGoalPoint(pt)
             panorama.setPano(data.location.pano);
             panorama.setVisible(true);
-            panorama.setOptions({ zoomControl: true, linksControl: true, addressControl: false, panControl: false })
+            panorama.setOptions({ zoomControl: false, linksControl: true, addressControl: false, panControl: false })
         }
     }
 
@@ -314,24 +292,14 @@ export default function Gameplay() {
                     <img src="./logo.png" style={{ maxHeight: "60px", marginRight: "calc(100% - 70px)" }} />
                     {isLoaded ? (<GoogleMap
                         mapContainerStyle={{ width: '75vw', height: '400px', marginLeft: "12.5vw", marginBottom: "10px" }}
-                        center={{ lat: (goalPoint.lat + userGuessPosition.lat) / 2, lng: (goalPoint.lng + userGuessPosition.lng) / 2 }}
-                        zoom={14}
+                        center={center}
+                        zoom={16}
                         options={{
                             streetViewControl: false,
                         }}
                     >
                         <MarkerF title="HELLO" position={goalPoint}>The place you were supposed to be!</MarkerF>
                         <MarkerF position={userGuessPosition}>Guess position</MarkerF>
-                        <PolylineF
-                            path={[goalPoint, userGuessPosition]}
-                            geodesic={true}
-                            options={{
-                                strokeColor: "#ff2527",
-                                strokeOpacity: 0.75,
-                                strokeWeight: 2,
-
-                            }}
-                        />
                     </GoogleMap>) : <></>}
                     <div id={styles["roundInformation"]}></div>
 
@@ -345,30 +313,22 @@ export default function Gameplay() {
             </>
         )
     }
-    function zoomIn() {
-
-        if (panorama != undefined) {
-            panorama.setZoom(panorama.getZoom() + 1)
-        }
-    }
-
-    function zoomOut() {
-        if (panorama != undefined) {
-            panorama.setZoom(panorama.getZoom() - 1)
-        }
-    }
-
-    function ControlOverlay() {
-
-        return (
-            <div id={styles.controlsOverlay}>
-                <button id={styles["zoomIn"]} onClick={zoomIn}>+</button>
-                <button id={styles["zoomOut"]} onClick={zoomOut}>-</button>
-            </div>
-        )
-    }
 
 
+
+}
+
+
+function ControlOverlay() {
+    return (
+        <div id={styles.controlsOverlay}>
+            <button id={styles["zoomIn"]} onClick={zoomIn()}>+</button>
+            <button id={styles["zoomOut"]} onClick={zoomOut()}>-</button>
+        </div>
+    )
+}
+
+function zoomIn() {
 
 }
 
@@ -376,6 +336,9 @@ export default function Gameplay() {
 
 
 
+function pano() {
+
+}
 function fillGuessBar(bar, stopScoreAddFn) {
     canvasMapWidth = window.innerWidth
     bar = bar.current.getContext("2d")

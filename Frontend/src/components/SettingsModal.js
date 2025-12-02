@@ -84,9 +84,17 @@ export default function SettingsModal() {
     if (open) {
       ensureAudio();
       startMusic();
-      // Sync local sliders with persisted values on open
-      setMusicPct(Math.round((musicVolume ?? 0) * 100));
-      setEffectsPct(Math.round((effectsVolume ?? 0) * 100));
+      try {
+        const mv = Number(localStorage.getItem("musicVolume"));
+        const ev = Number(localStorage.getItem("effectsVolume"));
+        if (!Number.isNaN(mv)) setMusicPct(Math.round(mv * 100));
+        else setMusicPct(Math.round((musicVolume ?? 0) * 100));
+        if (!Number.isNaN(ev)) setEffectsPct(Math.round(ev * 100));
+        else setEffectsPct(Math.round((effectsVolume ?? 0) * 100));
+      } catch {
+        setMusicPct(Math.round((musicVolume ?? 0) * 100));
+        setEffectsPct(Math.round((effectsVolume ?? 0) * 100));
+      }
     }
   }, [open, ensureAudio, startMusic, musicVolume, effectsVolume]);
 

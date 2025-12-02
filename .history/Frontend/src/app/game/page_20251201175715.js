@@ -46,7 +46,7 @@ const center = {
 
 export default function Gameplay() {
     // Pull in audio helpers
-    const { playEffect, startMusic, ensureAudio, startScoreAdd, stopScoreAdd } = useAudio();
+    const { playEffect, startMusic, ensureAudio } = useAudio();
     const [showScoreScreen, setShowScoreScreen] = useState(false)
     const [score, setScore] = useState()
     const [guessInfo, setGuessInfo] = useState()
@@ -252,9 +252,8 @@ export default function Gameplay() {
         //score screen has: 
         fillTicks = 0
         fillTicksAcc = 0
-        // Animate score bar + play fill sound
-        startScoreAdd()
-        barInterval = setInterval(fillGuessBar, 1, scorebarFillRef, stopScoreAdd)
+        // Animate score bar
+        barInterval = setInterval(fillGuessBar, 1, scorebarFillRef)
         setScore(effectiveScore + "pts")
         setGuessInfo("You didn't guess!")
         if (hasGuessed) {
@@ -376,11 +375,10 @@ export default function Gameplay() {
 
 
 
-function fillGuessBar(bar, stopScoreAddFn) {
+function fillGuessBar(bar) {
     canvasMapWidth = window.innerWidth
     bar = bar.current.getContext("2d")
     if (fillTicks > ((((.8 * canvasMapWidth) / 3) * (effectiveScore / 5000)) - 30)) {
-        try { if (typeof stopScoreAddFn === 'function') stopScoreAddFn() } catch {}
         clearInterval(barInterval)
     }
     fillTicks += 1 + fillTicksAcc
