@@ -1,408 +1,59 @@
-/*
-TO DO FOR ME:
-MAKE THE ZOOM WORK
-
-*/
-
-
-
-
-
-
 "use client"
-import { useRef, useState, useEffect, useCallback, React } from 'react'
-
+import { useRef, useState, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { GoogleMap, MarkerF, PolylineF, useJsApiLoader } from "@react-google-maps/api"
-
 import { getRandomPoint } from "./test-scripts/randpoint.js"
-import styles from "./page.module.css";
-// useAudio gives us simple helpers to play short sounds
-import { useAudio } from '@/components/AudioProvider';
-// import logo from "/logo.png";
-// import font from "https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap"
-let canvasMapWidth
-let panorama
-let fillTicks = 0
-let barInterval
-let fillTicksAcc = 0
-let effectiveScore
-let maxRounds = 3
-let pinPosition = {
-    lat: 0,
-    lng: 0
+import styles from "./page.module.css"
+import { useAudio } from '@/components/AudioProvider'
+
+const CAMPUS_MAP_BOUNDS = { north: 40.2, south: 40.0, east: -88.1, west: -88.3 }
+const MAP_CENTER = { lat: 40.1106, lng: -88.2073 }
+const MAX_ROUNDS = 3
+const MAX_SCORE = 5000
+const INITIAL_TIMER_SECONDS = 119
+const GOOGLE_MAPS_LIBRARIES = ['places']
+const GOOGLE_MAPS_API_KEY = "AIzaSyAsEYGOKBJHsMyWQ4QvAqAmI_BQm7vxpAk"
+
+const SCORE_BAR_CONFIG = { LINE_WIDTH: 50, LINE_Y: 35, LEFT_MARGIN: 0.1, RIGHT_MARGIN: 0.9, TICK_MULTIPLIER: 3, ACCELERATION: 0.01, WIDTH_RATIO: 0.8, OFFSET: 30 }
+const SCORE_BAR_COLORS = { background: "#3e5ab3", track: "#5b6369", fill: "#cd870e" }
+const DEFAULT_POSITION = { lat: 0, lng: 0 }
+
+function calculateDistance(lat1, lon1, lat2, lon2) { const R=6371; const dLat=(lat2-lat1)*Math.PI/180; const dLon=(lon2-lon1)*Math.PI/180; const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2; return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); }
+const MAX_DISTANCE_IN_BOUNDS = calculateDistance(CAMPUS_MAP_BOUNDS.south,CAMPUS_MAP_BOUNDS.west,CAMPUS_MAP_BOUNDS.north,CAMPUS_MAP_BOUNDS.east)
+function formatTimer(seconds){const m=Math.floor(seconds/60);const s=(seconds%60).toString().padStart(2,"0");return `${m}:${s}`}
+function calculateScore(distance,maxDistance=MAX_DISTANCE_IN_BOUNDS){const n=Math.min(distance/maxDistance,1);return Math.max(0,Math.floor(MAX_SCORE*(1-n)))}
+function getMapZoom(distance){if(distance>5)return 12; if(distance>1)return 14; return 16}
+function getMapCenter(goalPoint,guessPoint){const has=guessPoint&&!isDefaultPosition(guessPoint); if(!has) return goalPoint||MAP_CENTER; return {lat:(goalPoint.lat+guessPoint.lat)/2,lng:(goalPoint.lng+guessPoint.lng)/2}}
+function isDefaultPosition(p){return p?.lat===0&&p?.lng===0}
+const createPosition=(lat,lng)=>({lat,lng})
+function formatDistanceText(distance,has){const d=distance.toFixed(2);return has?`Your guess was ${d}km from the correct location!`:`No guess placed! Distance: ${d}km`}
+
+function useStreetViewPanorama(isLoaded,ref){
+  const [goalPoint,setGoalPoint]=useState(null)
+  const panoRef=useRef(null)
+  const ensureInit=useCallback(()=>{ if(panoRef.current) return true; if(!window.google?.maps) return false; const c=ref.current||document.querySelector('[data-panorama-container]'); if(!c) return false; try{ panoRef.current=new window.google.maps.StreetViewPanorama(c); return true }catch{return false} },[ref])
+  const findValid=useCallback((pt)=>{ if(!window.google?.maps) return; ensureInit(); const svc=new window.google.maps.StreetViewService(); const process=({data})=>{ const ok=data.copyright?.indexOf("Google")>=0; if(!ok){ const r=getRandomPoint(); const np=createPosition(r.lat,r.long); setGoalPoint(np); svc.getPanorama({location:np,radius:1000}).then(process); return } const loc=data.location.latLng; const final=createPosition(loc.lat(),loc.lng()); setGoalPoint(final); const pano=panoRef.current; if(pano?.setPano){ try{ pano.setPano(data.location.pano); pano.setVisible(true); pano.setOptions({zoomControl:true,linksControl:true,addressControl:false,panControl:false,showRoadLabels:false}); }catch{} } }; svc.getPanorama({location:pt,radius:1000}).then(process) },[ensureInit])
+  const adjust=useCallback((d)=>{const p=panoRef.current; if(p?.getZoom)p.setZoom(p.getZoom()+d)},[])
+  const zoomIn=useCallback(()=>adjust(1),[adjust]); const zoomOut=useCallback(()=>adjust(-1),[adjust])
+  useEffect(()=>{ if(!isLoaded||!window.google) return; ensureInit(); const r=getRandomPoint(); const p=createPosition(r.lat,r.long); setGoalPoint(p); findValid(p) },[isLoaded,ensureInit,findValid])
+  return {goalPoint:goalPoint, findValidPanorama:findValid, zoomIn, zoomOut}
 }
 
-const CAMPUS_MAP_BOUNDS = {
-    south: -89, east: 40, north: -88, west: 41
-}
+function useTimer(initialSeconds,onTimeout){ const [seconds,setSeconds]=useState(initialSeconds); const cb=useRef(onTimeout); useEffect(()=>{cb.current=onTimeout},[onTimeout]); useEffect(()=>{ if(seconds<=0){cb.current(); return} const i=setInterval(()=>setSeconds(v=>v<=1?0:v-1),1000); return ()=>clearInterval(i) },[seconds]); const reset=useCallback((s=initialSeconds)=>setSeconds(s),[initialSeconds]); return {seconds,reset,formatted:formatTimer(seconds)} }
 
-let timerInterval
+function useScoreBarAnimation(show,score,onComplete){ const canvasRef=useRef(null); const [eff,setEff]=useState(0); useEffect(()=>{ if(score&&typeof score==='string'){ const v=parseInt(score.replace('pts',''),10)||0; setEff(v)}},[score]); useEffect(()=>{ if(!show||!canvasRef.current||eff===0){ if(!show&&onComplete) onComplete(); return } const canvas=canvasRef.current; const ctx=canvas.getContext('2d'); const w=typeof window!=='undefined'?window.innerWidth:800; canvas.width=w; let t=0, acc=0, done=false; const {WIDTH_RATIO,LINE_WIDTH,LINE_Y,LEFT_MARGIN,RIGHT_MARGIN,TICK_MULTIPLIER,ACCELERATION,OFFSET}=SCORE_BAR_CONFIG; const target=((WIDTH_RATIO*w)/TICK_MULTIPLIER)*(eff/MAX_SCORE)-OFFSET; const startX=LEFT_MARGIN*w; const endX=RIGHT_MARGIN*w; const draw=()=>{ if(t>target){ if(!done&&onComplete){done=true; onComplete()} return false } t+=1+acc; acc+=ACCELERATION; ctx.fillStyle=SCORE_BAR_COLORS.background; ctx.fillRect(0,0,w,50); ctx.beginPath(); ctx.lineWidth=LINE_WIDTH; ctx.strokeStyle=SCORE_BAR_COLORS.track; ctx.lineCap='round'; ctx.moveTo(startX,LINE_Y); ctx.lineTo(endX,LINE_Y); ctx.stroke(); ctx.beginPath(); ctx.lineWidth=LINE_WIDTH; ctx.strokeStyle=SCORE_BAR_COLORS.fill; ctx.lineCap='round'; ctx.moveTo(startX,LINE_Y); ctx.lineTo(startX+(t*TICK_MULTIPLIER),LINE_Y); ctx.stroke(); return true}; const interval=setInterval(()=>{ if(!draw()) clearInterval(interval) },1); return ()=>{ clearInterval(interval); if(!done&&onComplete) onComplete() } },[show,eff,onComplete]); return canvasRef }
 
-const center = {
-    lat: 40.1106,
-    lng: -88.2073
-}
+function useGameLogic(goalPoint){ const [userGuess,setUserGuess]=useState(DEFAULT_POSITION); const [submittedGuess,setSubmittedGuess]=useState(null); const [submittedGoal,setSubmittedGoal]=useState(null); const [score,setScore]=useState(null); const [guessInfo,setGuessInfo]=useState(null); const submitGuess=useCallback(()=>{ if(!goalPoint) return; const has=!isDefaultPosition(userGuess); const guessPos=has?userGuess:null; const dist=guessPos?calculateDistance(guessPos.lat,guessPos.lng,goalPoint.lat,goalPoint.lng):MAX_DISTANCE_IN_BOUNDS; const sc=calculateScore(dist); setScore(`${sc}pts`); setGuessInfo(formatDistanceText(dist,has)); setSubmittedGoal(goalPoint); setSubmittedGuess(guessPos||DEFAULT_POSITION) },[goalPoint,userGuess]); const resetGuess=useCallback(()=>{ setUserGuess(DEFAULT_POSITION); setSubmittedGuess(null); setSubmittedGoal(null); setScore(null); setGuessInfo(null) },[]); return {userGuess,submittedGuess,submittedGoal,score,guessInfo,setUserGuess,submitGuess,resetGuess} }
 
-export default function Gameplay() {
-    // Pull in audio helpers
-    const { playEffect, startMusic, ensureAudio, startScoreAdd, stopScoreAdd } = useAudio();
-    const [showScoreScreen, setShowScoreScreen] = useState(false)
-    const [score, setScore] = useState()
-    const [guessInfo, setGuessInfo] = useState()
-    const [currentRound, setCurrentRound] = useState(1)
-    const [timerContents, setTimerContents] = useState("2:00")
-    const scorebarFillRef = useRef(null)
-    const [timerSeconds, setTimerSeconds] = useState(119)
-    const [goalPoint, setGoalPoint] = useState(null)
-    const [userGuessPosition, setUserGuessPosition] = useState({ lat: 0, lng: 0 })
-    const pano = useRef(null)
-    const [mapCenter, setMapCenter] = useState(center)
-    const [mapZoom, setMapZoom] = useState(16)
-    
-    const [hasGuessed, setHasGuessed] = useState(false)
+function UIOverlay({timerText,currentRound}){ return (<div id={styles["overlay"]}><Link href="/lobby"><img src="./logo.png" style={{maxHeight:"60px"}} alt="Logo"/></Link><div id={styles["timer"]}>{timerText}</div><div id={styles["roundCounter"]}>Round {currentRound}</div></div>) }
+function ControlOverlay({onZoomIn,onZoomOut}){ return (<div id={styles.controlsOverlay}><button id={styles["zoomIn"]} onClick={onZoomIn}>+</button><button id={styles["zoomOut"]} onClick={onZoomOut}>-</button></div>) }
 
-    const [map, setMap] = useState(undefined)
-    const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: "AIzaSyAsEYGOKBJHsMyWQ4QvAqAmI_BQm7vxpAk",
-        libraries: ['places']
-    })
-    useEffect(() => {
-        // Initialize audio and attempt to start background music
-        ensureAudio();
-        startMusic();
-    }, [ensureAudio, startMusic]);
-    const lastPlaceSoundRef = useRef(0)
-    const beepPlace = useCallback(() => {
-        const now = Date.now();
-        if (now - lastPlaceSoundRef.current > 400) {
-            playEffect()
-            lastPlaceSoundRef.current = now;
-        }
-    }, [playEffect])
+function useMapMarker(mapRef){ const markerRef=useRef(null); const update=useCallback((pos,pan=true)=>{ if(!mapRef.current||!window.google?.maps) return; if(markerRef.current){ markerRef.current.setMap(null); markerRef.current=null } if(pos&&!isDefaultPosition(pos)){ markerRef.current=new window.google.maps.Marker({position:pos,map:mapRef.current,title:'Guess position',animation:window.google.maps.Animation.DROP}); if(pan){ mapRef.current.panTo(pos); mapRef.current.setZoom(18) } } },[mapRef]); return {updateMarker:update} }
 
-    useEffect(() => {
-        // Do not schedule timer ticks while the score screen is visible
-        if (showScoreScreen) return;
-        timerInterval = setInterval(() => {
-            setTimerSeconds(timerSeconds - 1)
-            setTimerContents(Math.floor(timerSeconds / 60) + ":" + ("" + (timerSeconds % 60)).padStart(2, "0"))
-            
-            if (timerSeconds == 0) {
-                clearInterval(timerInterval)
-                submitGuess()
-            }
-        }, 1000)
+function GuessMap({isLoaded,userGuess,onMapClick,isExpanded,onToggleExpand,onSubmitGuess}){ const mapRef=useRef(null); const {updateMarker}=useMapMarker(mapRef); const style=useMemo(()=>({width:isExpanded?'600px':'400px',height:isExpanded?'600px':'400px',marginLeft:"200px",marginBottom:"15px",transition:'width 0.3s ease, height 0.3s ease'}),[isExpanded]); const onLoad=useCallback((m)=>{mapRef.current=m;m.setCenter(MAP_CENTER);m.setZoom(16)},[]); const onClick=useCallback((e)=>{const pos=createPosition(e.latLng.lat(),e.latLng.lng()); updateMarker(pos,true); onMapClick(pos)},[updateMarker,onMapClick]); useEffect(()=>{ if(mapRef.current&&userGuess){ updateMarker(userGuess,false)} },[userGuess,updateMarker]); if(!isLoaded){ return (<div id={styles["guessOverlay"]}><div>Loading map...</div><button onClick={onSubmitGuess}>Submit guess!</button></div>) } return (<div id={styles["guessOverlay"]}><GoogleMap mapContainerStyle={style} defaultCenter={MAP_CENTER} defaultZoom={16} onClick={onClick} onLoad={onLoad} onDblClick={onToggleExpand} options={{streetViewControl:false,disableDoubleClickZoom:true}}/><button style={{width:"400px",marginLeft:"200px"}} onClick={onSubmitGuess}>Submit guess!</button></div>) }
 
-        return () => {
-            clearInterval(timerInterval)
-        }
-    }, [timerSeconds, showScoreScreen])
-    useEffect(() => {
-        if (!isLoaded || !window.google) return
-        let point = { lat: getRandomPoint().lat, lng: getRandomPoint().long }
-        
-        setGoalPoint(point)
+function ScoreScreen({show,score,guessInfo,goalPoint,guessPoint,isLoaded,onNextRound,onScoreBarComplete,currentRound}){ const router=useRouter(); const complete=currentRound>MAX_ROUNDS; const scorebarRef=useScoreBarAnimation(show,score,onScoreBarComplete); const onBtn=useCallback(()=>{ if(complete) router.push('/profile'); else onNextRound() },[complete,router,onNextRound]); if(!show){ return (<div style={{visibility:"hidden",display:"none"}}><canvas id={styles["fillScorebar"]} height="10" width="70" ref={scorebarRef}/></div>) } const dist=guessPoint&&!isDefaultPosition(guessPoint)?calculateDistance(guessPoint.lat,guessPoint.lng,goalPoint.lat,goalPoint.lng):0; const center=getMapCenter(goalPoint,guessPoint); const zoom=getMapZoom(dist); return (<div id={styles.scoreScreen}><img src="./logo.png" style={{maxHeight:"60px",marginRight:"calc(100% - 70px)"}} alt="Logo"/>{isLoaded&&goalPoint&&(<GoogleMap mapContainerStyle={{width:'75vw',height:'400px',marginLeft:"12.5vw",marginBottom:"10px"}} center={center} zoom={zoom} options={{streetViewControl:false}}><MarkerF position={goalPoint} title="Correct Location" icon={{url:"http://maps.google.com/mapfiles/ms/icons/green-dot.png"}}/>{guessPoint&&!isDefaultPosition(guessPoint)&&(<><MarkerF position={guessPoint} title="Your Guess" icon={{url:"http://maps.google.com/mapfiles/ms/icons/red-dot.png"}}/><PolylineF path={[goalPoint,guessPoint]} geodesic options={{strokeColor:"#ff2527",strokeOpacity:0.75,strokeWeight:2}}/></>)} </GoogleMap>)}<div id={styles["roundInformation"]}></div><div id={styles["scoreBar"]}><div id={styles["score"]}>{score}</div><canvas id={styles["fillScorebar"]} height="70" width={typeof window!=='undefined'?window.innerWidth:800} ref={scorebarRef}/><div id={styles["guessInfo"]}>{guessInfo}</div><button onClick={onBtn}>{complete?"Return to profile page":"Start next!"}</button></div></div>) }
 
-        panorama = new window.google.maps.StreetViewPanorama(pano.current)
-        const service = new google.maps.StreetViewService()
-        service.getPanorama({ location: point, radius: 1000 }).then(processData)
+export default function Gameplay(){ const [showScoreScreen,setShowScoreScreen]=useState(false); const [currentRound,setCurrentRound]=useState(1); const [isMapExpanded,setIsMapExpanded]=useState(false); const panoramaRef=useRef(null); const scoreAddStartedRef=useRef(false); const hasMarkerPlacedRef=useRef(false); const { isLoaded } = useJsApiLoader({id:'google-map-script',googleMapsApiKey:GOOGLE_MAPS_API_KEY,libraries:GOOGLE_MAPS_LIBRARIES}); const { playEffect,startMusic,ensureAudio,startScoreAdd,stopScoreAdd }=useAudio(); useEffect(()=>{ ensureAudio(); startMusic() },[ensureAudio,startMusic]); const {goalPoint,findValidPanorama,zoomIn,zoomOut}=useStreetViewPanorama(isLoaded,panoramaRef); const gameLogic=useGameLogic(goalPoint); const { seconds:timerSeconds, reset:resetTimer, formatted:timerText }=useTimer(INITIAL_TIMER_SECONDS,()=>handleSubmitGuess()); const stopScoreAudio=useCallback(()=>{ if(scoreAddStartedRef.current){ scoreAddStartedRef.current=false; stopScoreAdd() } },[stopScoreAdd]); const handleSubmitGuess=useCallback(()=>{ playEffect("submit"); gameLogic.submitGuess(); setCurrentRound(p=>p+1); setShowScoreScreen(true); setTimeout(()=>playEffect("score"),100) },[gameLogic,playEffect]); const handleMapClick=useCallback((pos)=>{ playEffect("place"); gameLogic.setUserGuess(pos); hasMarkerPlacedRef.current=true },[gameLogic,playEffect]); const handleScoreBarComplete=useCallback(()=>{ stopScoreAudio() },[stopScoreAudio]); const startRound=useCallback(()=>{ if(currentRound>MAX_ROUNDS) return; stopScoreAudio(); playEffect("place"); const r=getRandomPoint(); const newGoal=createPosition(r.lat,r.long); gameLogic.resetGuess(); setShowScoreScreen(false); resetTimer(INITIAL_TIMER_SECONDS); findValidPanorama(newGoal); hasMarkerPlacedRef.current=false },[currentRound,gameLogic,resetTimer,findValidPanorama,playEffect,stopScoreAudio]); useEffect(()=>{ if(showScoreScreen&&gameLogic.score){ stopScoreAdd(); scoreAddStartedRef.current=false; if(hasMarkerPlacedRef.current){ const t=setTimeout(()=>{ if(showScoreScreen&&gameLogic.score&&hasMarkerPlacedRef.current){ scoreAddStartedRef.current=true; startScoreAdd() } },50); return ()=>{ clearTimeout(t); stopScoreAdd() } } } else if(!showScoreScreen){ stopScoreAudio(); scoreAddStartedRef.current=false } },[showScoreScreen,gameLogic.score,currentRound,startScoreAdd,stopScoreAdd,stopScoreAudio]); return (<div className={styles.umbrella} style={styles}><div data-panorama-container ref={panoramaRef} style={{width:"100vw",height:"100vh"}}/><UIOverlay timerText={timerText} currentRound={currentRound}/><ControlOverlay onZoomIn={zoomIn} onZoomOut={zoomOut}/>{!showScoreScreen&&(<GuessMap isLoaded={isLoaded} userGuess={gameLogic.userGuess} onMapClick={handleMapClick} isExpanded={isMapExpanded} onToggleExpand={()=>setIsMapExpanded(p=>!p)} onSubmitGuess={handleSubmitGuess}/>)}<ScoreScreen show={showScoreScreen} score={gameLogic.score} guessInfo={gameLogic.guessInfo} goalPoint={gameLogic.submittedGoal} guessPoint={gameLogic.submittedGuess} isLoaded={isLoaded} onNextRound={startRound} onScoreBarComplete={handleScoreBarComplete} currentRound={currentRound}/></div>) }
 
-
-        /*, {
-            position: { lat: point.lat, lng: point.long },
-            pov: { heading: 100, pitch: 0 },
-            zoom: 1,
-            // preference: StreetViewPreference.NEAREST,
-            disableDefaultUI: true,
-            enableCloseButton: false,
-            addressControl: false,
-            radius: 100}0,
-            linksControl: true,
-            panControl: false,
-        }) */
-        function processData({ data }) {
-
-            if (data.copyright.indexOf("Google") < 1) {
-                point = { lat: getRandomPoint().lat, lng: getRandomPoint().long }
-                setGoalPoint(point)
-                service.getPanorama({ location: point, radius: 1000 }).then(processData)
-            }
-            setGoalPoint({ lat: data.location.latLng.lat(), lng: data.location.latLng.lng() })
-            panorama.setPano(data.location.pano);
-            panorama.setVisible(true);
-            panorama.setOptions({ zoomControl: true, linksControl: true, addressControl: false, panControl: false, showRoadLabels: false })
-        }
-
-    }, [isLoaded])
-    // Removed countdown sounds and banner to simplify
-    const GuessOverlay = useCallback(() => {
-        function handleZoomChanged() {
-            setMapZoom(this.getZoom())
-        }
-        function handlePosChange() {
-            setMapCenter({ lat: this.getCenter().lat(), lng: this.getCenter().lng() })
-        }
-        return (
-            <div id={styles["guessOverlay"]}>
-                {isLoaded ? (<GoogleMap
-                    mapContainerStyle={{ width: '600px', height: '400px', marginBottom: "15px" }}
-                    center={mapCenter}
-                    zoom={mapZoom}
-                    onClick={doThing}
-                    onMouseUp={doStupidMapCenterMoveThing}
-                    onLoad={(e) => {
-                        if (typeof map == "undefined") {
-                            setMap(e)
-                        }
-                    }}
-                    onZoomChanged={handleZoomChanged}
-                    // onCenterChanged={handlePosChange}
-                    options={{
-                        streetViewControl: false,
-                        // restriction: {
-                        //     latLngBounds: CAMPUS_MAP_BOUNDS,
-                        //     strictBounds: false,
-                        // }
-                    }}
-                ><MarkerF position={userGuessPosition}>Guess position</MarkerF>
-                </GoogleMap>) : <></>
-                }
-                <button style={{ width: "400px", marginLeft: "200px" }} onClick={() => { submitGuess() }}>Submit guess!</button>
-            </div >
-        )
-    }, [isLoaded, userGuessPosition, mapZoom, mapCenter, map])
-    function doThing(e) {
-        setHasGuessed(true)
-        console.log({
-            lat: e.latLng.lat(),
-            lng: e.latLng.lng()
-        })
-        // Play a beep when the player places a guess on the small map
-        beepPlace()
-        // console.log(e)
-        setUserGuessPosition({
-            lat: e.latLng.lat(),
-            lng: e.latLng.lng()
-        })
-
-    }
-    function doStupidMapCenterMoveThing(e) {
-        console.log({ lat: map.center.lat(), lng: map.center.lng() })
-        setHasGuessed(true)
-
-        setMapCenter({
-            lat: e.latLng.lat(),
-            lng: e.latLng.lng()
-        })
-        setUserGuessPosition({
-            lat: e.latLng.lat(),
-            lng: e.latLng.lng()
-        })
-        // Also beep on mouse up in case onClick didn't fire (drag/drop)
-        beepPlace()
-    }
-    const UIOverlay = useCallback(() => {
-        return (
-            <div id={styles["overlay"]}>
-                <Link href="/lobby">
-                    <img src="./logo.png" style={{ maxHeight: "60px" }} />
-                </Link>
-                <div id={styles["timer"]}>{timerContents}</div>
-                <div id={styles["roundCounter"]}>Round {currentRound}</div>
-            </div>
-        )
-    }, [timerContents, currentRound])
-
-    return (
-
-        <div className={styles.umbrella} style={styles}>
-            <div ref={pano} style={{
-                width: "100vw",
-                height: "100vh"
-            }}></div>
-            <UIOverlay></UIOverlay>
-            <ControlOverlay></ControlOverlay>
-            <ScoreScreen show={showScoreScreen}></ScoreScreen>
-            <GuessOverlay></GuessOverlay>
-            <script src="project-scripts/test.js"></script>
-
-        </div>
-    )
-    function submitGuess() {
-        // Play a beep when submitting a guess
-        playEffect()
-        setShowScoreScreen(true)
-        //calculate score
-        canvasMapWidth = window.innerWidth
-        scorebarFillRef.current["width"] = window.innerWidth
-        let distance = 0
-        // let distance = Math.sqrt(Math.pow(currentRoundData.guess.lat - currentRoundData.point.lat, 2) + Math.pow(currentRoundData.guess.long - currentRoundData.point.long, 2))
-
-        // score = 5000 * (1 - (Math.PI * distance * distance) / (1))
-        effectiveScore = 4700
-
-
-        clearInterval(timerInterval)
-        clearInterval(barInterval)
-        //display score screen
-        setCurrentRound(currentRound + 1)
-        // document.getElementById
-        //score screen has: 
-        fillTicks = 0
-        fillTicksAcc = 0
-        // Animate score bar + play fill sound
-        startScoreAdd()
-        barInterval = setInterval(fillGuessBar, 1, scorebarFillRef, stopScoreAdd)
-        setScore(effectiveScore + "pts")
-        setGuessInfo("You didn't guess!")
-        if (hasGuessed) {
-            setGuessInfo("Your guess was " + distance.toString().substring(0, distance.toString().indexOf(".") + 3) + "km from the correct location!")
-        }
-
-        /*
-            -map showing distance between guess and real place
-            -score (with slidy bar)
-            -round number
-            -button to start a new round
-        */
-    }
-    function startRound() {
-        // Play a beep when starting the next round
-        playEffect()
-        // // if (currentRound > maxRounds) {
-        // //     finalScore()
-        // //     return
-        // // }
-        // // timerSeconds = 121
-        let pt = { lat: getRandomPoint().lat, lng: getRandomPoint().long }
-
-        setGoalPoint(pt)
-        console.log("Goal Point: " + goalPoint)
-        const service = new google.maps.StreetViewService()
-        service.getPanorama({ location: pt, radius: 1000 }).then(processData)
-        // // updateTimer()
-        setTimerSeconds(119)
-        setTimerContents("2:00")
-
-        setShowScoreScreen(false)
-        function processData({ data }) {
-            console.log(data)
-            pt = { lat: getRandomPoint().lat, lng: getRandomPoint().long }
-
-            if (data.copyright.indexOf("Google") < 1) {
-                service.getPanorama({ location: pt, radius: 1000 }).then(processData)
-                return
-            }
-            setGoalPoint({ lat: data.location.latLng.lat(), lng: data.location.latLng.lng() })
-            panorama.setPano(data.location.pano);
-            panorama.setVisible(true);
-            panorama.setOptions({ zoomControl: true, linksControl: true, addressControl: false, panControl: false })
-        }
-    }
-
-    function ScoreScreen({ show }) {
-        if (!show) {
-            return (<div style={{ visibility: "hidden", display: "none" }}><canvas id={styles["fillScorebar"]} height="10" width="70" ref={scorebarFillRef}></canvas></div>)
-        }
-        console.log(goalPoint)
-        return (
-            <>
-                <div id={styles.scoreScreen}>
-
-                    <img src="./logo.png" style={{ maxHeight: "60px", marginRight: "calc(100% - 70px)" }} />
-                    {isLoaded ? (<GoogleMap
-                        mapContainerStyle={{ width: '75vw', height: '400px', marginLeft: "12.5vw", marginBottom: "10px" }}
-                        center={{ lat: (goalPoint.lat + userGuessPosition.lat) / 2, lng: (goalPoint.lng + userGuessPosition.lng) / 2 }}
-                        zoom={14}
-                        options={{
-                            streetViewControl: false,
-                        }}
-                    >
-                        <MarkerF title="HELLO" position={goalPoint}>The place you were supposed to be!</MarkerF>
-                        <MarkerF position={userGuessPosition}>Guess position</MarkerF>
-                        <PolylineF
-                            path={[goalPoint, userGuessPosition]}
-                            geodesic={true}
-                            options={{
-                                strokeColor: "#ff2527",
-                                strokeOpacity: 0.75,
-                                strokeWeight: 2,
-
-                            }}
-                        />
-                    </GoogleMap>) : <></>}
-                    <div id={styles["roundInformation"]}></div>
-
-                    <div id={styles["scoreBar"]}>
-                        <div id={styles["score"]}>{score}</div>
-                        <canvas id={styles["fillScorebar"]} height="70" width={window.innerWidth} ref={scorebarFillRef}></canvas>
-                        <div id={styles["guessInfo"]}>{guessInfo}</div>
-                        <button onClick={startRound}>Start next!</button>
-                    </div>
-                </div>
-            </>
-        )
-    }
-    function zoomIn() {
-
-        if (panorama != undefined) {
-            panorama.setZoom(panorama.getZoom() + 1)
-        }
-    }
-
-    function zoomOut() {
-        if (panorama != undefined) {
-            panorama.setZoom(panorama.getZoom() - 1)
-        }
-    }
-
-    function ControlOverlay() {
-
-        return (
-            <div id={styles.controlsOverlay}>
-                <button id={styles["zoomIn"]} onClick={zoomIn}>+</button>
-                <button id={styles["zoomOut"]} onClick={zoomOut}>-</button>
-            </div>
-        )
-    }
-
-
-
-}
-
-
-
-
-
-function fillGuessBar(bar, stopScoreAddFn) {
-    canvasMapWidth = window.innerWidth
-    bar = bar.current.getContext("2d")
-    if (fillTicks > ((((.8 * canvasMapWidth) / 3) * (effectiveScore / 5000)) - 30)) {
-        try { if (typeof stopScoreAddFn === 'function') stopScoreAddFn() } catch {}
-        clearInterval(barInterval)
-    }
-    fillTicks += 1 + fillTicksAcc
-    fillTicksAcc += 0.01
-    bar.fillStyle = "#3e5ab3"
-    bar.fillRect(0, 0, canvasMapWidth, 50)
-
-    bar.beginPath()
-    bar.lineWidth = 50
-    bar.strokeStyle = "#5b6369"
-    bar.lineCap = "round"
-    bar.moveTo((.1 * canvasMapWidth), 35)
-    bar.lineTo((.9 * canvasMapWidth), 35)
-    bar.stroke()
-
-
-    bar.beginPath()
-    bar.lineWidth = 50
-    bar.strokeStyle = "#cd870e"
-    bar.lineCap = "round"
-    bar.moveTo(.1 * canvasMapWidth, 35)
-    bar.lineTo((.1 * canvasMapWidth) + (fillTicks * 3), 35)
-    bar.stroke()
-
-}
