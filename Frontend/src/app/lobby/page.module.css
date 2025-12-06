@@ -3,7 +3,7 @@
   height: 100vh;
   width: 100%;
   overflow: hidden;
-  min-height: 2000px;
+  min-height: none;
   font-family: sans-serif;
 }
 
