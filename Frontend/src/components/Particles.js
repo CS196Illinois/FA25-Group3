@@ -1,5 +1,5 @@
 "use client"
-import { useRef, useState, useEffect, useCallback, React } from 'react'
+import { useRef, useState, useEffect } from 'react'
 
 let pArr = []
 let SNOW_COLLECTING = false
@@ -7,10 +7,23 @@ let SNOW_FALLING = true
 export default function Particles() {
     const [ticks, setTicks] = useState(0)
     const particleCanvas = useRef()
+    const snowImgRef = useRef(null)
+    const moundImgRef = useRef(null)
     let timerInterval
 
 
     useEffect(() => {
+        // Preload images once
+        if (!snowImgRef.current) {
+            const img = new Image()
+            img.src = "/snow.png"
+            snowImgRef.current = img
+        }
+        if (!moundImgRef.current) {
+            const img2 = new Image()
+            img2.src = "/snowmound.png"
+            moundImgRef.current = img2
+        }
         timerInterval = setInterval(() => {
             setTicks(ticks + 1)
             updateCanvas()
@@ -22,9 +35,12 @@ export default function Particles() {
 
     if (true) { // add like a settings thing for this later maybe or we just don't use it idk
         if (SNOW_FALLING) { // add like a settings thing for this later maybe or we just don't use it idk
-            return (<>
-                <canvas style={{ zIndex: 15, position: "absolute", top: 0, pointerEvents: "none" }} ref={particleCanvas}></canvas>
-            </>)
+            return (
+                <canvas
+                    style={{ zIndex: 100, position: "fixed", top: 0, left: 0, pointerEvents: "none" }}
+                    ref={particleCanvas}
+                />
+            )
         }
         return (<></>)
     }
@@ -35,17 +51,33 @@ export default function Particles() {
         var scrn = particleCanvas.current.getContext("2d")
         // scrn.fillRect(0, 0, 100, 100)
         // console.log(particleCanvas.current)
-        var im = new Image()
-        im.src = "snow.png"
+        const im = snowImgRef.current
+        if (!im || !im.complete) {
+            return
+        }
         scrn.clearRect(0, 0, window.innerWidth, window.innerHeight)
         // scrn.drawImage(im, 0, 0, 15, 15)
-        const SNOW_QUANTITY = 800
-        if (pArr.length < SNOW_QUANTITY) {
-            for (let i = pArr.length; i < SNOW_QUANTITY; i++) {
+        // Read desired particle count from localStorage; prefer discrete snowLevel
+        let desired = 800
+        try {
+            const lvl = parseInt(localStorage.getItem("snowLevel"), 10)
+            if (!Number.isNaN(lvl)) {
+                const levels = [0, 200, 600, 1200, 2000]
+                desired = levels[Math.max(0, Math.min(4, lvl))]
+            } else {
+                const stored = parseInt(localStorage.getItem("snowParticles"), 10)
+                if (!Number.isNaN(stored)) desired = Math.max(0, Math.min(3000, stored))
+            }
+        } catch {}
+        if (pArr.length < desired) {
+            for (let i = pArr.length; i < desired; i++) {
                 pArr.push([(Math.random(0, 6) * (window.innerWidth + 90) - 100), Math.random() * window.innerHeight, 0, 0])
             }
         }
-        for (let i = 0; i < SNOW_QUANTITY; i++) {
+        if (pArr.length > desired) {
+            pArr.length = desired
+        }
+        for (let i = 0; i < pArr.length; i++) {
             pArr[i][1] += Math.min(pArr[i][2], 5)
             pArr[i][0] += pArr[i][3]
             pArr[i][2] += (Math.random()) - .1
@@ -57,9 +89,10 @@ export default function Particles() {
             }
         }
         if (SNOW_COLLECTING) {
-            let im2 = new Image()
-            im2.src = "snowmound.png"
-            scrn.drawImage(im2, 0, Math.max(-window.innerHeight, 300 - (ticks)))
+            const im2 = moundImgRef.current
+            if (im2 && im2.complete) {
+                scrn.drawImage(im2, 0, Math.max(-window.innerHeight, 300 - (ticks)))
+            }
         }
     }
 }
