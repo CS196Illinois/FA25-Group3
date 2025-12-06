@@ -46,7 +46,7 @@ export default function Lobby() {
   const [name, setName] = useState("");
 
   useEffect(() => {
-    // Auth guard: if not signed in, redirect back to /login
+    // Auth guard: if not signed in, redirect back to /login.
     const unsub = onAuthStateChanged(auth, (user) => {
       if (!user) {
         try { router.replace("/login"); } catch {}
