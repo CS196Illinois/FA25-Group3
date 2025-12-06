@@ -1,13 +1,10 @@
-
 "use client"
-import { useRef, useState, useEffect, useCallback, useMemo } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { GoogleMap, MarkerF, PolylineF, useJsApiLoader } from "@react-google-maps/api"
+import { useJsApiLoader } from "@react-google-maps/api"
 import { getRandomPoint } from "./test-scripts/randpoint.js"
 import styles from "./page.module.css"
 import { useAudio } from '@/components/AudioProvider'
-import { parseDynamicParamFromURLPart } from 'next/dist/client/route-params.js'
 import ScoreScreen from './ScoreScreen.js'
 import GuessMap from './GuessMap.js'
 
@@ -24,13 +21,6 @@ const MAX_SCORE = 5000
 const INITIAL_TIMER_SECONDS = 119
 const GOOGLE_MAPS_LIBRARIES = ['places']
 const GOOGLE_MAPS_API_KEY = "AIzaSyAsEYGOKBJHsMyWQ4QvAqAmI_BQm7vxpAk"
-let userIcon = -1
-
-const SCORE_BAR_COLORS = {
-    background: "#3e5ab3",
-    track: "#5b6369",
-    fill: "#cd870e"
-}
 
 const DEFAULT_POSITION = { lat: 0, lng: 0 }
 
@@ -66,16 +56,6 @@ function getMapZoom(distance) {
     if (distance > 5) return 12
     if (distance > 1) return 14
     return 16
-}
-
-function getMapCenter(goalPoint, guessPoint) {
-    const hasValidGuess = guessPoint && !isDefaultPosition(guessPoint)
-    if (!hasValidGuess) return goalPoint || MAP_CENTER
-
-    return {
-        lat: (goalPoint.lat + guessPoint.lat) / 2,
-        lng: (goalPoint.lng + guessPoint.lng) / 2
-    }
 }
 
 function isDefaultPosition(position) {

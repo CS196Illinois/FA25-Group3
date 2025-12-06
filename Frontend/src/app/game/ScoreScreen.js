@@ -1,7 +1,7 @@
 import { useRouter } from 'next/navigation'
-import { useRef, useState, useEffect, useCallback, useMemo } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import styles from "./page.module.css"
-import { GoogleMap, MarkerF, PolylineF, useJsApiLoader } from "@react-google-maps/api"
+import { GoogleMap, MarkerF, PolylineF } from "@react-google-maps/api"
 
 let im = new Image()
 im.crossOrigin = "anonymous"

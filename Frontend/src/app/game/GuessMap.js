@@ -1,7 +1,7 @@
 
 "use client"
-import { useRef, useState, useEffect, useCallback, useMemo } from 'react'
-import { GoogleMap, MarkerF, PolylineF, useJsApiLoader } from "@react-google-maps/api"
+import { useRef, useEffect, useCallback, useMemo } from 'react'
+import { GoogleMap } from "@react-google-maps/api"
 import styles from "./page.module.css"
 const MAP_CENTER = { lat: 40.108252, lng: -88.22699 }
 
