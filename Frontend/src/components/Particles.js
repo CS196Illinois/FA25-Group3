@@ -62,5 +62,4 @@ export default function Particles() {
             scrn.drawImage(im2, 0, Math.max(-window.innerHeight, 300 - (ticks)))
         }
     }
-
 }
