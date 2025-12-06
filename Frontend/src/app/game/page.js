@@ -431,6 +431,13 @@ function GuessMap({
         transition: 'width 0.3s ease, height 0.3s ease'
     }), [isExpanded])
 
+    const buttonStyle = useMemo(() => ({
+        width: isExpanded ? '600px' : '400px',
+        marginLeft: '200px', 
+        float: "right",
+        transition: "0.3s ease"
+    }), [isExpanded])
+
     const handleMapLoad = useCallback((map) => {
         mapInstanceRef.current = map
         map.setCenter(MAP_CENTER)
@@ -481,7 +488,7 @@ function GuessMap({
                     disableDefaultUI: true
                 }}
             />
-            <button style={{ width: "400px", marginLeft: "200px" }} onClick={onSubmitGuess}>
+            <button style={buttonStyle} onClick={onSubmitGuess}>
                 Submit guess!
             </button>
         </div>
