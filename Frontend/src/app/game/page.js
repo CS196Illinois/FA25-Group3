@@ -6,6 +6,8 @@ import { GoogleMap, MarkerF, PolylineF, useJsApiLoader } from "@react-google-map
 import { getRandomPoint } from "./test-scripts/randpoint.js"
 import styles from "./page.module.css"
 import { useAudio } from '@/components/AudioProvider'
+import { doc, updateDoc, getFirestore, increment } from 'firebase/firestore';
+import { db, auth } from "../../components/firebase-config.js"
 
 const CAMPUS_MAP_BOUNDS = {
     north: 40.1161,
@@ -333,6 +335,7 @@ function useGameLogic(goalPoint) {
             : MAX_DISTANCE_IN_BOUNDS
 
         const calculatedScore = calculateScore(distance)
+
         setScore(`${calculatedScore}pts`)
         setGuessInfo(formatDistanceText(distance, hasGuess))
         setSubmittedGoal(goalPoint)
@@ -346,6 +349,28 @@ function useGameLogic(goalPoint) {
         setScore(null)
         setGuessInfo(null)
     }, [])
+    
+    useEffect (() => {
+        const updateInfo = async () => {
+            if (auth.currentUser != null) {
+                const user = auth.currentUser 
+                const docRef = doc(db, "users", user.uid)
+                try {
+                    if (score != undefined) {
+                        await updateDoc(docRef, {
+                        totalPoints: increment(score)
+                        }); 
+                        if (score > user.highScore) {
+                            await updateDoc(docRef, {highScore: score})
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error updating scores", error);
+                }
+            }
+        };
+        updateInfo();
+        }, [])
 
     return {
         userGuess,
@@ -502,7 +527,7 @@ function ScoreScreen({
 
     const handleButtonClick = useCallback(() => {
         if (isGameComplete) {
-            router.push('/profile')
+            router.push('/lobby')
         } else {
             onNextRound()
         }
@@ -595,7 +620,7 @@ function ScoreScreen({
                 />
                 <div id={styles["guessInfo"]}>{guessInfo}</div>
                 <button onClick={handleButtonClick}>
-                    {isGameComplete ? "Game over - return to profile page" : "Start next!"}
+                    {isGameComplete ? "Game over - return to lobby page" : "Start next!"}
                 </button>
             </div>
         </div>

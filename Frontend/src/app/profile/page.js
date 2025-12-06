@@ -8,6 +8,7 @@ import Link from "next/link";
 import React, { useState, useEffect } from 'react';
 import SignOut from "@/components/SignoutButton";
 import DeleteAccount from "@/components/DeleteAccountButton";
+import {auth} from "../../components/firebase-config"
 
 export default function Profile() {
   const [profilePic, setProfilePic] = useState();
@@ -36,9 +37,8 @@ export default function Profile() {
         </div>
 
         <div className={styles.profileContainer2}>
-          <h1>High Score: {}</h1>
-          <h1>Total Points: {}</h1>
-          <h1>Daily Streak: {}</h1>
+          <h1>High Score: {auth.currentUser.highScore} </h1>
+          <h1>Total Points: {auth.currentUser.totalPoints}</h1>
           <br></br>
           <div className={styles['button-container']}>
             <SignOut/>
