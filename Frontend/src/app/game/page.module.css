@@ -63,6 +63,10 @@ body {
     font-weight: bold;
     vertical-align: center;
     margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-variant-numeric: tabular-nums; /* prevent width jitter on number change */
 }
 
 .logo {
@@ -217,6 +221,8 @@ body {
     background-size: cover;
 }
 
+/* removed timerWrap + banner to simplify */
+
 #roundInformation {
     width: 100%;
     font-size: 55px;
@@ -224,3 +230,7 @@ body {
     font-weight: bold;
     display: block;
 }
+
+ 
+
+ 
