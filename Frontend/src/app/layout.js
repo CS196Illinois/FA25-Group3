@@ -24,7 +24,6 @@ export default function RootLayout({ children }) {
         {/* Wrap the entire app with AudioProvider so Settings and Game can control sound */}
         <AudioProvider>
           <main>{children}</main>
-          {/* Global UI helpers */}
           <GlobalButtonSfx />
           {/* Global settings button/modal on all pages */}
           <Particles></Particles>
