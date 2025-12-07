@@ -2,6 +2,8 @@
  position: relative;
  height: 100vh;
  width: 100%;
+ min-width: none;
+ min-height: none;
  overflow: hidden;
  font-family: sans-serif;
 }
@@ -23,7 +25,7 @@ html {
  left: 0;
  width: 100vw;
  height: 100vh;
- z-index: -1;
+ z-index: -3;
  overflow: hidden;
 }
 
