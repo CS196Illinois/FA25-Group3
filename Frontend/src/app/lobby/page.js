@@ -3,9 +3,10 @@
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
 import signInWithGoogle  from "@/components/firebase-config";
-import { auth } from "@/components/firebase-config";
+import { auth, db } from "@/components/firebase-config";
 import { onAuthStateChanged } from "firebase/auth";
 import { useState, useRef, useEffect } from "react";
+import { doc, getDoc } from 'firebase/firestore'
 
 function StartButton() {
   const router = useRouter();
@@ -38,7 +39,8 @@ export default function Lobby() {
   const [profilePic, setProfilePic] = useState();
   const router = useRouter();
   const handleLoginSuccess = () => router.push("/lobby");
-
+  const [docSnap, setDocSnap] = useState();
+  
   const [index, setIndex] = useState(0);
   const [active, setActive] = useState(true);
   const videoARef = useRef(null);
@@ -102,6 +104,19 @@ export default function Lobby() {
     };
   }, [index, active]); // Only index and active - NOT videos
 
+  useEffect(() => {
+      const user = auth.currentUser 
+    if (user) {
+      const docRef = doc(db, "users", user.uid)
+      const updateSnap = async () => {
+      const docSnap = await getDoc(docRef);
+        setDocSnap(docSnap)
+      }
+      updateSnap()
+    }
+  }, []);
+
+
   return (
     <div className={styles.App}>
       <div className={styles.videoBackground}>
@@ -138,7 +153,7 @@ export default function Lobby() {
               className={styles["trophy"]}
               alt="trophy"
             />
-            <span>2100</span>
+            <span>{docSnap ? docSnap.get("highScore") : 0}</span>
           </div>
 
           <img
