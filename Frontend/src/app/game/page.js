@@ -7,6 +7,8 @@ import styles from "./page.module.css"
 import { useAudio } from '@/components/AudioProvider'
 import ScoreScreen from './ScoreScreen.js'
 import GuessMap from './GuessMap.js'
+import { auth, db} from '@/components/firebase-config.js'
+import { doc, updateDoc, increment, getDoc } from 'firebase/firestore'
 
 const CAMPUS_MAP_BOUNDS = {
     north: 40.1161,
@@ -212,7 +214,27 @@ function useGameLogic(goalPoint) {
             : MAX_DISTANCE_IN_BOUNDS
 
         const calculatedScore = calculateScore(distance)
-
+        const updateInfo = async () => {
+            if (auth.currentUser != null) {
+                const user = auth.currentUser 
+                const docRef = doc(db, "users", user.uid)
+                const docSnap = await getDoc(docRef);
+                try {
+                    if (calculatedScore != undefined) {
+                        await updateDoc(docRef, {
+                        totalPoints: increment(calculatedScore)
+                        }); 
+                        if (calculatedScore > docSnap.get("highScore")) {
+                            await updateDoc(docRef, {highScore: calculatedScore})
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error updating scores", error);
+                }
+            }
+        };
+        updateInfo()
+        
         setScore(`${calculatedScore}pts`)
         setGuessInfo(formatDistanceText(distance, hasGuess))
         setSubmittedGoal(goalPoint)
@@ -226,6 +248,7 @@ function useGameLogic(goalPoint) {
         setScore(null)
         setGuessInfo(null)
     }, [])
+    
 
     return {
         userGuess,

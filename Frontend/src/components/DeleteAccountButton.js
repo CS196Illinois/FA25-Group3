@@ -8,7 +8,7 @@ import Popup from "./ConfirmDeletePopUp";
 import { useState } from 'react';
 
 export default function DeleteAccount() {
-    const router = useRouter();
+    const router = useRouter(); //keeps track of what page user is on
     const handleDelete = async () => {
         const user = auth?.currentUser;
         try {
